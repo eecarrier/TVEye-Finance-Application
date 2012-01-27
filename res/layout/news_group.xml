@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- News group shows news stories for a group or company -->
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+    <!-- The company name (or ticker) should be fixed to the top of the page -->
+    <TextView
+        android:id="@+id/company_name"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        />
+    <!-- The tags layout contains a list of all of the associated tags -->
+    <!-- It should also be fixed on the bottom of the page -->
+    <LinearLayout
+        android:id="@+id/tags"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/news_stories"
+        android:layout_alignParentTop="true">
+    </LinearLayout>
+    <!-- This linear layout contains all news_abstract fragments -->
+    <LinearLayout
+        android:id="@id/news_stories"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_below="@id/company_name">
+    </LinearLayout>
+</RelativeLayout>
