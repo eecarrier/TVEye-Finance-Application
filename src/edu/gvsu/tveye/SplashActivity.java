@@ -42,7 +42,7 @@ public class SplashActivity extends Activity {
 							Toast.makeText(SplashActivity.this, "Received response!", Toast.LENGTH_LONG).show();
 							responseView.setText(object.toString());
 						}
-					}).execute(new APIWrapper.RegisterTask.Params("test-no-5@email.com", "motomoto", "John", "Smith"));
+					}).execute(new APIWrapper.RegisterTask.Params("test-no-6@email.com", "motomoto", "John", "Smith"));
 				} catch (Exception e) {
 					responseView.setText(e.getMessage());
 				}

@@ -1,7 +1,12 @@
 package edu.gvsu.tveye;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup.LayoutParams;
+import android.widget.Button;
 import android.widget.TextView;
 
 
@@ -20,8 +25,15 @@ public class NewsGridActivity extends Activity {
     }
     
     private void setupViews() {
-    	TextView sample = new TextView(this);
-    	sample.setText("Sample");
+    	Button sample = new Button(this);
+    	sample.setText("Click to move to the next activity");
+    	sample.setOnClickListener(new OnClickListener() {
+			
+			public void onClick(View v) {
+				Intent intent = new Intent(NewsGridActivity.this, SplashActivity.class);
+				startActivity(intent);
+			}
+		});
     	setContentView(sample);
     }
 	

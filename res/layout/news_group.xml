@@ -17,13 +17,14 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/news_stories"
-        android:layout_alignParentTop="true">
+        android:layout_alignParentBottom="true">
     </LinearLayout>
     <!-- This linear layout contains all news_abstract fragments -->
     <LinearLayout
         android:id="@id/news_stories"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_below="@id/company_name">
+        android:layout_below="@id/company_name"
+        android:layout_above="@id/tags">
     </LinearLayout>
 </RelativeLayout>

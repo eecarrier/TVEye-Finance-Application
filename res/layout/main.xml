@@ -4,11 +4,17 @@
     android:layout_height="fill_parent"
     android:orientation="vertical" >
 
+    <ImageView
+        android:src="@drawable/ic_launcher"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    
     <Button
         android:id="@+id/button1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Register" />
+        android:text="Register"
+        android:background="@drawable/blacktowhite" />
 
     <TextView
         android:layout_width="fill_parent"
