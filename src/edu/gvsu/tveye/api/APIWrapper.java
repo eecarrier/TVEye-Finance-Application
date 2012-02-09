@@ -9,14 +9,19 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
+import org.apache.http.auth.AuthenticationException;
+import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URIUtils;
+import org.apache.http.impl.auth.BasicSchemeFactory;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONException;
@@ -29,10 +34,21 @@ public class APIWrapper {
 
 	private static final String HOSTNAME = "betaworks-dev.arctry.com";
 	private static final int PORT = 8964;
-	private static final HttpClient httpClient = new DefaultHttpClient();
+	
+	private static HttpClient httpClient = new DefaultHttpClient();
+	private static Header authHeader = null;
 	
 	private static URI createURI(String method) throws URISyntaxException {
 		return URIUtils.createURI("http", HOSTNAME, PORT, method, "", null);
+	}
+	
+	private static void authenticate(HttpRequest request) throws AuthenticationException {
+		if(authHeader == null) {
+			UsernamePasswordCredentials credentials = new UsernamePasswordCredentials("gzavitz@gmail.com", "motorola");
+			BasicSchemeFactory factory = new BasicSchemeFactory();
+			authHeader = factory.newInstance(request.getParams()).authenticate(credentials, request);
+		}
+		request.addHeader(authHeader);
 	}
 	
 	private static byte[] consumeStream(InputStream input) throws IOException {
@@ -140,31 +156,31 @@ public class APIWrapper {
 		
 		@Override
 		protected JSONObject doInBackground(Params... params) {
-			if(params.length > 0) {
-				try {
-					// Create an HTTP request using Apache's HTTP client library
-					HttpGet request = new HttpGet(createURI("/news/list?" + params[0].getParam()));
-					request.setHeader("DevKey", Config.DEV_KEY);
-					request.setHeader("Accept", "application/json");
-		
-					// Execute the request using an HttpClient
-					HttpClient httpClient = new DefaultHttpClient();
-					HttpResponse response = httpClient.execute(request);
-					HttpEntity responseEntity = response.getEntity();
-					if(response.getStatusLine().getStatusCode() != 200) {
-						return exceptionToJSON(new Exception("Server responded with status code " + response.getStatusLine().getStatusCode()));
-					} else {
-						// Consume the HTTP response and create a JSONObject from content
-						String content = new String(consumeStream(responseEntity.getContent()));
-						Log.d("NewsTask", "Received content:\n" + content);
-						return new JSONObject(content);
-					}
-				} catch(Exception e) {
-					e.printStackTrace();
-					return exceptionToJSON(e);
+			try {
+				// Create an HTTP request using Apache's HTTP client library
+				String path = "/news/list" + (params.length > 0 ? "?" + params[0].getParam() : "");
+				HttpGet request = new HttpGet(createURI(path));
+				request.setHeader("DevKey", Config.DEV_KEY);
+				request.setHeader("Accept", "application/json");
+				authenticate(request);
+	
+				for(Header header : request.getAllHeaders()) {
+					Log.d("NewsTask", "Header: " + header.getName() + " = " + header.getValue());
 				}
-			} else {
-				return exceptionToJSON(new Exception("Developer did not provide parameters"));
+				// Execute the request using an HttpClient
+				HttpResponse response = httpClient.execute(request);
+				HttpEntity responseEntity = response.getEntity();
+				if(response.getStatusLine().getStatusCode() != 200) {
+					return exceptionToJSON(new Exception("Server responded with status code " + response.getStatusLine().getStatusCode()));
+				} else {
+					// Consume the HTTP response and create a JSONObject from content
+					String content = new String(consumeStream(responseEntity.getContent()));
+					Log.d("NewsTask", "Received content:\n" + content);
+					return new JSONObject(content);
+				}
+			} catch(Exception e) {
+				e.printStackTrace();
+				return exceptionToJSON(e);
 			}
 		}
 		

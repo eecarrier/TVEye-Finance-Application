@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"         
+    android:layout_weight="1"         
+    android:layout_width="0dip"
+    android:background="@drawable/tile_background">
+    <TextView
+        android:id="@+id/news_title"
+        style="@style/TileHeading" />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dip"
+        android:layout_marginTop="3dip"
+        android:layout_marginBottom="3dip"
+        android:background="#A2A2A2" />
+    <TextView
+        android:id="@+id/news_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+</LinearLayout>
