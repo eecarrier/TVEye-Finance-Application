@@ -9,19 +9,14 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Html;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.ViewGroup;
-import android.widget.GridLayout;
-import android.widget.TableLayout;
+import android.widget.LinearLayout;
 import android.widget.TableLayout.LayoutParams;
-import android.widget.TableRow;
 import android.widget.TextView;
-import android.widget.Toast;
 import edu.gvsu.tveye.api.APIWrapper;
 import edu.gvsu.tveye.api.APIWrapper.JSONObjectCallback;
 
@@ -58,15 +53,17 @@ public class NewsGridActivity extends Activity {
 			}
 			
 			public void onComplete(JSONObject object) {
+				LinearLayout[] rows = new LinearLayout[] {
+					(LinearLayout) findViewById(R.id.news_tile_row_1),
+					(LinearLayout) findViewById(R.id.news_tile_row_2)
+				};
 				LayoutInflater inflate = getLayoutInflater();
 				try {
 					JSONArray stories = object.getJSONArray("list");
-					ViewGroup grid = (ViewGroup) findViewById(R.id.tile_grid);
-					TableRow row = null;
 					for(int i = 0; i < stories.length() && i < 6; i++) {
 						final JSONObject story = stories.getJSONObject(i);
 						View tile = inflate.inflate(R.layout.news_tile, null);
-						tile.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.FILL_PARENT, 0f));
+						tile.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT, 0.3f));
 						tile.setOnClickListener(new OnClickListener() {
 							public void onClick(View v) {
 								Intent intent = new Intent(NewsGridActivity.this, NewsArticleActivity.class);
@@ -80,12 +77,7 @@ public class NewsGridActivity extends Activity {
 						title.setText(Html.fromHtml(story.getString("title")));
 						content.setText(Html.fromHtml(story.getString("content")));
 						
-						if(i % 3 == 0) {
-							row = new TableRow(NewsGridActivity.this);
-							row.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT, 1f));
-							grid.addView(row);
-						}
-						row.addView(tile);
+						rows[i / 3].addView(tile);
 					}
 				} catch(JSONException e) {
 					e.printStackTrace();
