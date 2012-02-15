@@ -28,11 +28,15 @@ import edu.gvsu.tveye.api.APIWrapper.JSONObjectCallback;
  * @author gregzavitz
  */
 public class NewsGridActivity extends Activity {
+	
+	private static final int HORIZONTAL = 0, VERTICAL = 1;
+	private int orientation = VERTICAL;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.news_tiles);
+        setTileOrientation(orientation);
         loadNews();
     }
     
@@ -41,6 +45,18 @@ public class NewsGridActivity extends Activity {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.action_menu, menu);
         return true;
+    }
+    
+    private void setTileOrientation(int orientation) {
+    	this.orientation = orientation;
+    	LinearLayout tiles = (LinearLayout) findViewById(R.id.news_tiles);
+		LinearLayout[] tile_group = new LinearLayout[] {
+			(LinearLayout) findViewById(R.id.news_tile_row_1),
+			(LinearLayout) findViewById(R.id.news_tile_row_2)
+		};
+		tiles.setOrientation(orientation == HORIZONTAL ? LinearLayout.HORIZONTAL : LinearLayout.VERTICAL);
+		tile_group[0].setOrientation(orientation == HORIZONTAL ? LinearLayout.VERTICAL : LinearLayout.HORIZONTAL);
+		tile_group[1].setOrientation(orientation == HORIZONTAL ? LinearLayout.VERTICAL : LinearLayout.HORIZONTAL);
     }
     
     private void loadNews() {
@@ -53,7 +69,7 @@ public class NewsGridActivity extends Activity {
 			}
 			
 			public void onComplete(JSONObject object) {
-				LinearLayout[] rows = new LinearLayout[] {
+				LinearLayout[] tile_group = new LinearLayout[] {
 					(LinearLayout) findViewById(R.id.news_tile_row_1),
 					(LinearLayout) findViewById(R.id.news_tile_row_2)
 				};
@@ -77,7 +93,7 @@ public class NewsGridActivity extends Activity {
 						title.setText(Html.fromHtml(story.getString("title")));
 						content.setText(Html.fromHtml(story.getString("content")));
 						
-						rows[i / 3].addView(tile);
+						tile_group[i / 3].addView(tile);
 					}
 				} catch(JSONException e) {
 					e.printStackTrace();
