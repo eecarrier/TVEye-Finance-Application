@@ -1,27 +1,22 @@
 package edu.gvsu.tveye;
 
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Intent;
 import android.os.Bundle;
-import android.text.Html;
-import android.view.Gravity;
-import android.view.LayoutInflater;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.view.ViewPager;
+import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.ViewGroup;
-import android.widget.GridLayout;
-import android.widget.TableLayout;
-import android.widget.TableLayout.LayoutParams;
-import android.widget.TableRow;
+import android.view.animation.Animation;
+import android.view.animation.BounceInterpolator;
+import android.view.animation.TranslateAnimation;
 import android.widget.TextView;
-import android.widget.Toast;
+import edu.gvsu.tveye.adapter.NewsGridAdapter;
 import edu.gvsu.tveye.api.APIWrapper;
 import edu.gvsu.tveye.api.APIWrapper.JSONObjectCallback;
 
@@ -32,23 +27,55 @@ import edu.gvsu.tveye.api.APIWrapper.JSONObjectCallback;
  * 
  * @author gregzavitz
  */
-public class NewsGridActivity extends Activity {
-
+public class NewsGridActivity extends FragmentActivity {
+	
+	private NewsGridAdapter adapter;
+	private ViewPager pager;
+	private TextView more;
+	private Animation hide, show, bump;
+    
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.news_tiles);
+        super.onCreate(savedInstanceState); 
+        setContentView(R.layout.news_pager);
+        pager = (ViewPager) findViewById(R.id.pager);
+        pager.setOnPageChangeListener(new OnPageChangeListener() {
+			public void onPageSelected(int page) {
+				if(page < adapter.getCount() - 1) {
+					Log.d("NewsGrid", "Bumping");
+					more.startAnimation(bump);
+					more.setVisibility(View.VISIBLE);
+				} else {
+					Log.d("NewsGrid", "Hide");
+					more.startAnimation(hide);
+					more.setVisibility(View.GONE);
+				}
+			}
+			
+			public void onPageScrolled(int arg0, float arg1, int arg2) {
+			}
+			
+			public void onPageScrollStateChanged(int arg0) {
+			}
+		});
+        more = (TextView) findViewById(R.id.more);
+        more.setOnClickListener(new OnClickListener() {			
+			public void onClick(View v) {
+				pager.setCurrentItem(pager.getCurrentItem() + 1, true);
+			}
+		});
+        int rself = TranslateAnimation.RELATIVE_TO_SELF;
+        hide = new TranslateAnimation(rself, 0f, rself, 1f, rself, 0f, rself, 0);
+        hide.setDuration(1000);
+        show = new TranslateAnimation(rself, 1f, rself, 0f, rself, 0f, rself, 0);
+        show.setDuration(1000);
+        bump = new TranslateAnimation(rself, .7f, rself, 1f, rself, 0f, rself, 0);
+        bump.setInterpolator(new BounceInterpolator());
+        bump.setDuration(1000);
         loadNews();
     }
     
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.action_menu, menu);
-        return true;
-    }
-    
-    private void loadNews() {
+    public void loadNews() {
         new APIWrapper.NewsTask(new JSONObjectCallback() {
 			public void onError(JSONObject object) {
 				AlertDialog.Builder builder = new AlertDialog.Builder(NewsGridActivity.this);
@@ -58,40 +85,18 @@ public class NewsGridActivity extends Activity {
 			}
 			
 			public void onComplete(JSONObject object) {
-				LayoutInflater inflate = getLayoutInflater();
-				try {
-					JSONArray stories = object.getJSONArray("list");
-					ViewGroup grid = (ViewGroup) findViewById(R.id.tile_grid);
-					TableRow row = null;
-					for(int i = 0; i < stories.length() && i < 6; i++) {
-						final JSONObject story = stories.getJSONObject(i);
-						View tile = inflate.inflate(R.layout.news_tile, null);
-						tile.setLayoutParams(new TableRow.LayoutParams(0, LayoutParams.FILL_PARENT, 0f));
-						tile.setOnClickListener(new OnClickListener() {
-							public void onClick(View v) {
-								Intent intent = new Intent(NewsGridActivity.this, NewsArticleActivity.class);
-								intent.putExtra("metadata", story.toString());
-								startActivity(intent);
-							}
-						});
-
-						TextView title = (TextView) tile.findViewById(R.id.news_title), 
-						content = (TextView) tile.findViewById(R.id.news_content);
-						title.setText(Html.fromHtml(story.getString("title")));
-						content.setText(Html.fromHtml(story.getString("content")));
-						
-						if(i % 3 == 0) {
-							row = new TableRow(NewsGridActivity.this);
-							row.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT, 1f));
-							grid.addView(row);
-						}
-						row.addView(tile);
-					}
-				} catch(JSONException e) {
-					e.printStackTrace();
-				}
+				more.setVisibility(View.VISIBLE);
+				more.startAnimation(show);
+		        pager.setAdapter((adapter = new NewsGridAdapter(getSupportFragmentManager(), object)));
 			}
 		}).execute();
     }
-	
+    
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.action_menu, menu);
+        return true;
+    }
+    
 }

@@ -1,15 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:orientation="vertical"
-	android:layout_width="fill_parent"
-	android:layout_height="fill_parent">
-	<TableLayout
-	    android:id="@+id/tile_grid"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/news_tiles"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:weightSum="1.0">
+    <LinearLayout
+        android:id="@+id/news_tile_row_1"
+        android:layout_weight="0.5"
 	    android:layout_width="fill_parent"
 	    android:layout_height="fill_parent"
-	    android:layout_alignParentLeft="true"
-	    android:layout_alignParentRight="true"
-	    android:layout_alignParentTop="true"
-	    android:layout_alignParentBottom="true"
-	    android:stretchColumns="*" />
-</RelativeLayout>
+	    android:orientation="horizontal"
+	    android:weightSum="1.0">
+	</LinearLayout>
+    <LinearLayout
+        android:id="@+id/news_tile_row_2"
+        android:layout_weight="0.5"
+	    android:layout_width="fill_parent"
+	    android:layout_height="fill_parent"
+	    android:orientation="horizontal"
+	    android:weightSum="1.0">
+	</LinearLayout>
+</LinearLayout>

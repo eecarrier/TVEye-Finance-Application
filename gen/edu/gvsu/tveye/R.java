@@ -18,27 +18,33 @@ public final class R {
     public static final class id {
         public static final int button1=0x7f070000;
         public static final int company_name=0x7f070006;
-        public static final int menu_login=0x7f07000c;
-        public static final int menu_logout=0x7f07000d;
-        public static final int menu_settings=0x7f07000e;
+        public static final int menu_login=0x7f070011;
+        public static final int menu_logout=0x7f070012;
+        public static final int menu_settings=0x7f070013;
+        public static final int more=0x7f07000a;
         public static final int news_abstract=0x7f070005;
-        public static final int news_content=0x7f07000a;
+        public static final int news_content=0x7f07000d;
         public static final int news_picture=0x7f070004;
         public static final int news_stories=0x7f070008;
+        public static final int news_tile_row_1=0x7f07000f;
+        public static final int news_tile_row_2=0x7f070010;
+        public static final int news_tiles=0x7f07000e;
+        public static final int news_timestamp=0x7f07000c;
         public static final int news_title=0x7f070002;
         public static final int news_wrapper=0x7f070003;
+        public static final int pager=0x7f070009;
         public static final int response=0x7f070001;
         public static final int tags=0x7f070007;
-        public static final int tile_grid=0x7f07000b;
-        public static final int web_view=0x7f070009;
+        public static final int web_view=0x7f07000b;
     }
     public static final class layout {
         public static final int main=0x7f030000;
         public static final int news_abstract=0x7f030001;
         public static final int news_group=0x7f030002;
-        public static final int news_story=0x7f030003;
-        public static final int news_tile=0x7f030004;
-        public static final int news_tiles=0x7f030005;
+        public static final int news_pager=0x7f030003;
+        public static final int news_story=0x7f030004;
+        public static final int news_tile=0x7f030005;
+        public static final int news_tiles=0x7f030006;
     }
     public static final class menu {
         public static final int action_menu=0x7f060000;
@@ -50,4 +56,25 @@ public final class R {
     public static final class style {
         public static final int TileHeading=0x7f050000;
     }
+    public static final class styleable {
+        /** Attributes that can be used with a NewsGallery.
+           <p>Includes the following attributes:</p>
+           <table>
+           <colgroup align="left" />
+           <colgroup align="left" />
+           <tr><th>Attribute</th><th>Description</th></tr>
+           <tr><td><code>{@link #NewsGallery_android_galleryItemBackground edu.gvsu.tveye:android_galleryItemBackground}</code></td><td></td></tr>
+           </table>
+           @see #NewsGallery_android_galleryItemBackground
+         */
+        public static final int[] NewsGallery = {
+            0x0101004c
+        };
+        /**
+          <p>This symbol is the offset where the {@link edu.gvsu.tveye.R.attr#android_galleryItemBackground}
+          attribute's value can be found in the {@link #NewsGallery} array.
+          @attr name android:android_galleryItemBackground
+        */
+        public static final int NewsGallery_android_galleryItemBackground = 0;
+    };
 }

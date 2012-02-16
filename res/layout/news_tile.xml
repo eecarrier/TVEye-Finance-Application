@@ -4,9 +4,26 @@
     android:layout_weight="1"         
     android:layout_width="0dip"
     android:background="@drawable/tile_background">
+    <FrameLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+	    <ImageView
+	        android:id="@+id/news_picture"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	     	android:scaleType="center"
+	     	android:contentDescription="" />
+	    <TextView
+	        android:id="@+id/news_title"
+	        android:layout_gravity="bottom"
+	        style="@style/TileHeading" />
+    </FrameLayout>
     <TextView
-        android:id="@+id/news_title"
-        style="@style/TileHeading" />
+        android:id="@+id/news_timestamp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#CCC"
+        android:textStyle="italic" />
     <View
         android:layout_width="match_parent"
         android:layout_height="1dip"
