@@ -4,10 +4,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import edu.gvsu.tveye.NewsArticleActivity;
-import edu.gvsu.tveye.R;
-import edu.gvsu.tveye.util.ImageDownloadTask;
-import edu.gvsu.tveye.util.ImageDownloadTask.ImageCallback;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -16,13 +12,17 @@ import android.support.v4.app.Fragment;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import edu.gvsu.tveye.NewsArticleActivity;
+import edu.gvsu.tveye.R;
+import edu.gvsu.tveye.util.ImageDownloadTask;
+import edu.gvsu.tveye.util.ImageDownloadTask.ImageCallback;
 
 /**
  * NewsTileFragment is a set of stories seen on the NewsGridActivity
