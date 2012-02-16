@@ -6,7 +6,10 @@ import org.json.JSONObject;
 
 import edu.gvsu.tveye.NewsArticleActivity;
 import edu.gvsu.tveye.R;
+import edu.gvsu.tveye.util.ImageDownloadTask;
+import edu.gvsu.tveye.util.ImageDownloadTask.ImageCallback;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Html;
@@ -14,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.OnClickListener;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.TableLayout.LayoutParams;
@@ -67,15 +71,17 @@ public class NewsTileFragment extends Fragment {
 
 	public void populate() throws JSONException {
 		LinearLayout[] tile_group = new LinearLayout[] {
-				(LinearLayout) getView().findViewById(R.id.news_tile_row_1),
-				(LinearLayout) getView().findViewById(R.id.news_tile_row_2)
-			};
+			(LinearLayout) getView().findViewById(R.id.news_tile_row_1),
+			(LinearLayout) getView().findViewById(R.id.news_tile_row_2)
+		};
 		
 		LayoutInflater inflater = getActivity().getLayoutInflater();
 		for(int i = 0; i < set.length(); i++) {
 			final JSONObject story = set.getJSONObject(i);
-			View tile = inflater.inflate(R.layout.news_tile, null);
-			tile.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT, 0.3f));
+			float weightSum = tile_group[i / 3].getWeightSum();
+			float tileWeight = i < 3 ? (i == 0 ? weightSum / 2 : weightSum / 4) : weightSum / 3;
+			final View tile = inflater.inflate(R.layout.news_tile, null);
+			tile.setLayoutParams(new LinearLayout.LayoutParams(0, LayoutParams.FILL_PARENT, tileWeight));
 			tile.setOnClickListener(new OnClickListener() {
 				public void onClick(View v) {
 					Intent intent = new Intent(getActivity(), NewsArticleActivity.class);
@@ -88,7 +94,19 @@ public class NewsTileFragment extends Fragment {
 			content = (TextView) tile.findViewById(R.id.news_content);
 			title.setText(Html.fromHtml(story.getString("title")));
 			content.setText(Html.fromHtml(story.getString("content")));
-			
+			if(story.has("imageUrl")) {
+				final ImageView picture = (ImageView) tile.findViewById(R.id.news_picture);
+				new ImageDownloadTask(new ImageCallback() {
+					public void imageFailed(String url) {
+						picture.setVisibility(View.GONE);
+					}
+					
+					public void imageDownloaded(String url, Bitmap bitmap) {
+						picture.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, (int)(tile.getMeasuredHeight() * 0.33f)));
+						picture.setImageBitmap(bitmap);
+					}
+				}).execute(story.getString("imageUrl"));
+			}
 			tile_group[i / 3].addView(tile);
 		}
 	}
