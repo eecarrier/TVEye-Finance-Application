@@ -1,22 +1,16 @@
 package edu.gvsu.tveye;
 
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Intent;
 import android.os.Bundle;
-import android.text.Html;
-import android.view.LayoutInflater;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.view.ViewPager;
+import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.LinearLayout;
-import android.widget.TableLayout.LayoutParams;
 import android.widget.TextView;
+import edu.gvsu.tveye.adapter.NewsGridAdapter;
 import edu.gvsu.tveye.api.APIWrapper;
 import edu.gvsu.tveye.api.APIWrapper.JSONObjectCallback;
 
@@ -27,39 +21,34 @@ import edu.gvsu.tveye.api.APIWrapper.JSONObjectCallback;
  * 
  * @author gregzavitz
  */
-public class NewsGridActivity extends Activity {
+public class NewsGridActivity extends FragmentActivity {
 	
-	private static final int HORIZONTAL = 0, VERTICAL = 1;
-	private int orientation = VERTICAL;
-
+	private NewsGridAdapter adapter;
+	private ViewPager pager;
+	private TextView debug;
+    
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.news_tiles);
-        setTileOrientation(orientation);
+        super.onCreate(savedInstanceState); 
+        setContentView(R.layout.news_pager);
+        pager = (ViewPager) findViewById(R.id.pager);
+        pager.setOnPageChangeListener(new OnPageChangeListener() {
+			
+			public void onPageSelected(int page) {
+				debug.setText("Page selected: " + (1 + page) + "/" + adapter.getCount());
+			}
+			
+			public void onPageScrolled(int arg0, float arg1, int arg2) {
+			}
+			
+			public void onPageScrollStateChanged(int arg0) {
+			}
+		});
+        debug = (TextView) findViewById(R.id.debug);
         loadNews();
     }
     
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.action_menu, menu);
-        return true;
-    }
-    
-    private void setTileOrientation(int orientation) {
-    	this.orientation = orientation;
-    	LinearLayout tiles = (LinearLayout) findViewById(R.id.news_tiles);
-		LinearLayout[] tile_group = new LinearLayout[] {
-			(LinearLayout) findViewById(R.id.news_tile_row_1),
-			(LinearLayout) findViewById(R.id.news_tile_row_2)
-		};
-		tiles.setOrientation(orientation == HORIZONTAL ? LinearLayout.HORIZONTAL : LinearLayout.VERTICAL);
-		tile_group[0].setOrientation(orientation == HORIZONTAL ? LinearLayout.VERTICAL : LinearLayout.HORIZONTAL);
-		tile_group[1].setOrientation(orientation == HORIZONTAL ? LinearLayout.VERTICAL : LinearLayout.HORIZONTAL);
-    }
-    
-    private void loadNews() {
+    public void loadNews() {
         new APIWrapper.NewsTask(new JSONObjectCallback() {
 			public void onError(JSONObject object) {
 				AlertDialog.Builder builder = new AlertDialog.Builder(NewsGridActivity.this);
@@ -69,37 +58,16 @@ public class NewsGridActivity extends Activity {
 			}
 			
 			public void onComplete(JSONObject object) {
-				LinearLayout[] tile_group = new LinearLayout[] {
-					(LinearLayout) findViewById(R.id.news_tile_row_1),
-					(LinearLayout) findViewById(R.id.news_tile_row_2)
-				};
-				LayoutInflater inflate = getLayoutInflater();
-				try {
-					JSONArray stories = object.getJSONArray("list");
-					for(int i = 0; i < stories.length() && i < 6; i++) {
-						final JSONObject story = stories.getJSONObject(i);
-						View tile = inflate.inflate(R.layout.news_tile, null);
-						tile.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT, 0.3f));
-						tile.setOnClickListener(new OnClickListener() {
-							public void onClick(View v) {
-								Intent intent = new Intent(NewsGridActivity.this, NewsArticleActivity.class);
-								intent.putExtra("metadata", story.toString());
-								startActivity(intent);
-							}
-						});
-
-						TextView title = (TextView) tile.findViewById(R.id.news_title), 
-						content = (TextView) tile.findViewById(R.id.news_content);
-						title.setText(Html.fromHtml(story.getString("title")));
-						content.setText(Html.fromHtml(story.getString("content")));
-						
-						tile_group[i / 3].addView(tile);
-					}
-				} catch(JSONException e) {
-					e.printStackTrace();
-				}
+		        pager.setAdapter((adapter = new NewsGridAdapter(getSupportFragmentManager(), object)));
 			}
 		}).execute();
     }
-	
+    
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.action_menu, menu);
+        return true;
+    }
+    
 }
