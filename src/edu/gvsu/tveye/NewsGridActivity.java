@@ -7,8 +7,14 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
+import android.view.animation.BounceInterpolator;
+import android.view.animation.TranslateAnimation;
 import android.widget.TextView;
 import edu.gvsu.tveye.adapter.NewsGridAdapter;
 import edu.gvsu.tveye.api.APIWrapper;
@@ -25,7 +31,8 @@ public class NewsGridActivity extends FragmentActivity {
 	
 	private NewsGridAdapter adapter;
 	private ViewPager pager;
-	private TextView debug;
+	private TextView more;
+	private Animation hide, show, bump;
     
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -33,9 +40,16 @@ public class NewsGridActivity extends FragmentActivity {
         setContentView(R.layout.news_pager);
         pager = (ViewPager) findViewById(R.id.pager);
         pager.setOnPageChangeListener(new OnPageChangeListener() {
-			
 			public void onPageSelected(int page) {
-				debug.setText("Page selected: " + (1 + page) + "/" + adapter.getCount());
+				if(page < adapter.getCount() - 1) {
+					Log.d("NewsGrid", "Bumping");
+					more.startAnimation(bump);
+					more.setVisibility(View.VISIBLE);
+				} else {
+					Log.d("NewsGrid", "Hide");
+					more.startAnimation(hide);
+					more.setVisibility(View.GONE);
+				}
 			}
 			
 			public void onPageScrolled(int arg0, float arg1, int arg2) {
@@ -44,7 +58,15 @@ public class NewsGridActivity extends FragmentActivity {
 			public void onPageScrollStateChanged(int arg0) {
 			}
 		});
-        debug = (TextView) findViewById(R.id.debug);
+        more = (TextView) findViewById(R.id.more);
+        int rself = TranslateAnimation.RELATIVE_TO_SELF;
+        hide = new TranslateAnimation(rself, 0f, rself, 1f, rself, 0f, rself, 0);
+        hide.setDuration(1000);
+        show = new TranslateAnimation(rself, 1f, rself, 0f, rself, 0f, rself, 0);
+        show.setDuration(1000);
+        bump = new TranslateAnimation(rself, .7f, rself, 1f, rself, 0f, rself, 0);
+        bump.setInterpolator(new BounceInterpolator());
+        bump.setDuration(1000);
         loadNews();
     }
     
@@ -58,6 +80,8 @@ public class NewsGridActivity extends FragmentActivity {
 			}
 			
 			public void onComplete(JSONObject object) {
+				more.setVisibility(View.VISIBLE);
+				more.startAnimation(show);
 		        pager.setAdapter((adapter = new NewsGridAdapter(getSupportFragmentManager(), object)));
 			}
 		}).execute();
