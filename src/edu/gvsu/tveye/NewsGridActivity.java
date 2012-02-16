@@ -60,8 +60,7 @@ public class NewsGridActivity extends FragmentActivity {
 			}
 		});
         more = (TextView) findViewById(R.id.more);
-        more.setOnClickListener(new OnClickListener() {
-			
+        more.setOnClickListener(new OnClickListener() {			
 			public void onClick(View v) {
 				pager.setCurrentItem(pager.getCurrentItem() + 1, true);
 			}
