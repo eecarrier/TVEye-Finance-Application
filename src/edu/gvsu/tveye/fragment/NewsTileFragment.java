@@ -10,6 +10,7 @@ import edu.gvsu.tveye.util.ImageDownloadTask;
 import edu.gvsu.tveye.util.ImageDownloadTask.ImageCallback;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Html;
@@ -17,10 +18,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup.LayoutParams;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.TableLayout.LayoutParams;
 
 /**
  * NewsTileFragment is a set of stories seen on the NewsGridActivity
@@ -90,7 +92,7 @@ public class NewsTileFragment extends Fragment {
 				}
 			});
 
-			TextView title = (TextView) tile.findViewById(R.id.news_title), 
+			final TextView title = (TextView) tile.findViewById(R.id.news_title), 
 			content = (TextView) tile.findViewById(R.id.news_content);
 			title.setText(Html.fromHtml(story.getString("title")));
 			content.setText(Html.fromHtml(story.getString("content")));
@@ -102,8 +104,9 @@ public class NewsTileFragment extends Fragment {
 					}
 					
 					public void imageDownloaded(String url, Bitmap bitmap) {
-						picture.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, (int)(tile.getMeasuredHeight() * 0.33f)));
+						picture.setLayoutParams(new FrameLayout.LayoutParams(LayoutParams.FILL_PARENT, (int)(tile.getMeasuredHeight() * 0.33f)));
 						picture.setImageBitmap(bitmap);
+						title.setBackgroundColor(Color.argb(0xbb, 0x37, 0x39, 0x37));
 					}
 				}).execute(story.getString("imageUrl"));
 			}

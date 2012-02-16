@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
 import android.view.animation.BounceInterpolator;
@@ -59,6 +60,12 @@ public class NewsGridActivity extends FragmentActivity {
 			}
 		});
         more = (TextView) findViewById(R.id.more);
+        more.setOnClickListener(new OnClickListener() {
+			
+			public void onClick(View v) {
+				pager.setCurrentItem(pager.getCurrentItem() + 1, true);
+			}
+		});
         int rself = TranslateAnimation.RELATIVE_TO_SELF;
         hide = new TranslateAnimation(rself, 0f, rself, 1f, rself, 0f, rself, 0);
         hide.setDuration(1000);

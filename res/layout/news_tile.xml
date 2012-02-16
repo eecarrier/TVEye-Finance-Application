@@ -4,20 +4,26 @@
     android:layout_weight="1"         
     android:layout_width="0dip"
     android:background="@drawable/tile_background">
-    <TextView
-        android:id="@+id/news_title"
-        style="@style/TileHeading" />
+    <FrameLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+	    <ImageView
+	        android:id="@+id/news_picture"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	     	android:scaleType="center"
+	     	android:contentDescription="" />
+	    <TextView
+	        android:id="@+id/news_title"
+	        android:layout_gravity="bottom"
+	        style="@style/TileHeading" />
+    </FrameLayout>
     <View
         android:layout_width="match_parent"
         android:layout_height="1dip"
         android:layout_marginTop="3dip"
         android:layout_marginBottom="3dip"
         android:background="#A2A2A2" />
-    <ImageView
-        android:id="@+id/news_picture"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-     	android:scaleType="center" />
     <TextView
         android:id="@+id/news_content"
         android:layout_width="match_parent"
