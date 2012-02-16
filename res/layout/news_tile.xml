@@ -18,6 +18,12 @@
 	        android:layout_gravity="bottom"
 	        style="@style/TileHeading" />
     </FrameLayout>
+    <TextView
+        android:id="@+id/news_timestamp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#CCC"
+        android:textStyle="italic" />
     <View
         android:layout_width="match_parent"
         android:layout_height="1dip"
