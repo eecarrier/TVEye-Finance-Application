@@ -11,8 +11,7 @@
 	        android:id="@+id/news_picture"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
-	     	android:scaleType="center"
-	     	android:contentDescription="" />
+	     	android:scaleType="center" />
 	    <TextView
 	        android:id="@+id/news_title"
 	        android:layout_gravity="bottom"
