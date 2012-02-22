@@ -1,8 +1,13 @@
 package edu.gvsu.tveye;
 
+import org.apache.http.auth.AuthenticationException;
 import org.json.JSONObject;
 
 import android.app.AlertDialog;
+import android.app.DialogFragment;
+import android.app.Fragment;
+import android.app.FragmentTransaction;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
@@ -20,6 +25,8 @@ import android.widget.Toast;
 import edu.gvsu.tveye.adapter.NewsGridAdapter;
 import edu.gvsu.tveye.api.APIWrapper;
 import edu.gvsu.tveye.api.APIWrapper.JSONObjectCallback;
+import edu.gvsu.tveye.fragment.LoginFragment;
+import edu.gvsu.tveye.fragment.LoginFragment.LoginCallback;
 
 /**
  * NewsGridActivity is the primary screen used for displaying NewsTileFragments
@@ -27,7 +34,7 @@ import edu.gvsu.tveye.api.APIWrapper.JSONObjectCallback;
  * 
  * @author gregzavitz
  */
-public class NewsGridActivity extends FragmentActivity {
+public class NewsGridActivity extends FragmentActivity implements LoginCallback {
 
 	private NewsGridAdapter adapter;
 	private ViewPager pager;
@@ -68,14 +75,30 @@ public class NewsGridActivity extends FragmentActivity {
 		loadNews();
 	}
 
-	public void loadNews() {
+	private void displayLogin() {
+		FragmentTransaction ft = getFragmentManager().beginTransaction();
+	    ft.addToBackStack(null);
+	    new LoginFragment(this).show(ft, "login");
+	}
+	
+	private void loadNews() {
 		new APIWrapper.NewsTask(new JSONObjectCallback() {
 			public void onError(JSONObject object) {
-				AlertDialog.Builder builder = new AlertDialog.Builder(
-						NewsGridActivity.this);
-				builder.setTitle("Failed to load news");
-				builder.setMessage(object.toString());
-				builder.create().show();
+				String type = object.optString("exception", "exception");
+				String message = object.optString("error", "Error");
+				if(type.equals(AuthenticationException.class.getName())) {
+					if(message.equals(APIWrapper.CREDENTIALS_INVALID)) {
+						displayLogin();
+					} else if(message.equals(APIWrapper.CREDENTIALS_MISSING)) {
+						displayLogin();
+					}
+				} else {
+					AlertDialog.Builder builder = new AlertDialog.Builder(
+							NewsGridActivity.this);
+					builder.setTitle("Failed to load news");
+					builder.setMessage(object.toString());
+					builder.create().show();
+				}
 			}
 
 			public void onComplete(JSONObject object) {
@@ -83,6 +106,10 @@ public class NewsGridActivity extends FragmentActivity {
 				more.startAnimation(show);
 				pager.setAdapter((adapter = new NewsGridAdapter(
 						getSupportFragmentManager(), object)));
+			}
+			
+			public Context getContext() {
+				return NewsGridActivity.this;
 			}
 		}).execute();
 	}
@@ -118,6 +145,10 @@ public class NewsGridActivity extends FragmentActivity {
 			return true;
 		}
 		return false;
+	}
+
+	public void setCredentials() {
+		loadNews();
 	}
 
 }

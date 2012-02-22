@@ -27,197 +27,230 @@ import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import edu.gvsu.tveye.util.TVEyePreferences;
+
+import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
 public class APIWrapper {
 
+	public static final String CREDENTIALS_MISSING = "Credentials were not supplied";
+	public static final String CREDENTIALS_INVALID = "Credentials were invalid";
+
 	private static final String HOSTNAME = "betaworks-dev.arctry.com";
 	private static final int PORT = 8964;
-	
+
 	private static HttpClient httpClient = new DefaultHttpClient();
-	private static Header authHeader = null;
-	
+
 	private static URI createURI(String method) throws URISyntaxException {
 		return URIUtils.createURI("http", HOSTNAME, PORT, method, "", null);
 	}
-	
-	private static void authenticate(HttpRequest request) throws AuthenticationException {
-		if(authHeader == null) {
-			UsernamePasswordCredentials credentials = new UsernamePasswordCredentials("gzavitz@gmail.com", "motorola");
-			BasicSchemeFactory factory = new BasicSchemeFactory();
-			authHeader = factory.newInstance(request.getParams()).authenticate(credentials, request);
+
+	private static void authenticate(HttpRequest request, Context context)
+			throws AuthenticationException {
+		TVEyePreferences preferences = new TVEyePreferences(context);
+		if (!preferences.hasCredentials())
+			throw new AuthenticationException(CREDENTIALS_MISSING);
+		else {
+			UsernamePasswordCredentials credentials = preferences
+					.getCredentials();
+			request.addHeader(new BasicSchemeFactory().newInstance(
+					request.getParams()).authenticate(credentials, request));
 		}
-		request.addHeader(authHeader);
 	}
-	
+
 	private static byte[] consumeStream(InputStream input) throws IOException {
-		ByteArrayOutputStream output = new ByteArrayOutputStream(); 
+		ByteArrayOutputStream output = new ByteArrayOutputStream();
 		byte[] buffer = new byte[2048];
 		int read;
-		while((read = input.read(buffer)) > -1) {
+		while ((read = input.read(buffer)) > -1) {
 			output.write(buffer, 0, read);
 		}
 		input.close();
 		return output.toByteArray();
 	}
-	
+
 	private static JSONObject exceptionToJSON(Exception e) {
 		JSONObject object = new JSONObject();
 		try {
 			object.put("error", e.getMessage());
 			object.put("exception", e.getClass().getName());
-		} catch(JSONException e1) {
+		} catch (JSONException e1) {
 			e1.printStackTrace();
 		}
 		return object;
 	}
-	
-	public static class RegisterTask extends AsyncTask<RegisterTask.Params, Void, JSONObject> {
+
+	public static class RegisterTask extends
+			AsyncTask<RegisterTask.Params, Void, JSONObject> {
 
 		private JSONObjectCallback callback;
-		
+
 		public RegisterTask(JSONObjectCallback callback) {
 			this.callback = callback;
 		}
-		
+
 		@Override
 		protected JSONObject doInBackground(Params... params) {
-			if(params.length > 0) {
+			if (params.length > 0) {
 				try {
 					// Create an HTTP request using Apache's HTTP client library
 					HttpPost request = new HttpPost(createURI("/register"));
 					request.setEntity(params[0].getEntity());
 					request.setHeader("DevKey", Config.DEV_KEY);
 					request.setHeader("Accept", "application/json");
-		
+
 					// Execute the request using an HttpClient
 					HttpResponse response = httpClient.execute(request);
 					HttpEntity responseEntity = response.getEntity();
-					if(response.getStatusLine().getStatusCode() != 200) {
-						return exceptionToJSON(new Exception("Server responded with status code " + response.getStatusLine().getStatusCode()));
+					if (response.getStatusLine().getStatusCode() != 200) {
+						return exceptionToJSON(new Exception(
+								"Server responded with status code "
+										+ response.getStatusLine()
+												.getStatusCode()));
 					} else {
-						// Consume the HTTP response and create a JSONObject from content
-						String content = new String(consumeStream(responseEntity.getContent()));
+						// Consume the HTTP response and create a JSONObject
+						// from content
+						String content = new String(
+								consumeStream(responseEntity.getContent()));
 						Log.d("RegisterTask", "Received content:\n" + content);
 						return new JSONObject(content);
 					}
-				} catch(Exception e) {
+				} catch (Exception e) {
 					e.printStackTrace();
 					return exceptionToJSON(e);
 				}
 			} else {
-				return exceptionToJSON(new Exception("Developer did not provide parameters"));
+				return exceptionToJSON(new Exception(
+						"Developer did not provide parameters"));
 			}
 		}
-		
+
 		@Override
 		protected void onPostExecute(JSONObject result) {
-			if(result.has("error")) {
+			if (result.has("error")) {
 				callback.onError(result);
 			} else {
 				callback.onComplete(result);
 			}
 		}
-		
+
 		public static class Params {
-			
+
 			public String email, password, firstName, lastName;
-			
-			public Params(String email, String password, String firstName, String lastName) {
+
+			public Params(String email, String password, String firstName,
+					String lastName) {
 				this.email = email;
 				this.password = password;
 				this.firstName = firstName;
 				this.lastName = lastName;
 			}
-			
-			public UrlEncodedFormEntity getEntity() throws UnsupportedEncodingException {
+
+			public UrlEncodedFormEntity getEntity()
+					throws UnsupportedEncodingException {
 				List<NameValuePair> data = new ArrayList<NameValuePair>();
 				data.add(new BasicNameValuePair("email", email));
 				data.add(new BasicNameValuePair("password", password));
-				// Only include first and last names if the user provided them (not required)
-				if(firstName != null)
+				// Only include first and last names if the user provided them
+				// (not required)
+				if (firstName != null)
 					data.add(new BasicNameValuePair("firstName", firstName));
-				if(lastName != null)
+				if (lastName != null)
 					data.add(new BasicNameValuePair("lastName", lastName));
 				return new UrlEncodedFormEntity(data);
 			}
 		}
-		
+
 	}
 
-	public static class NewsTask extends AsyncTask<NewsTask.Params, Void, JSONObject> {
+	public static class NewsTask extends
+			AsyncTask<NewsTask.Params, Void, JSONObject> {
 
 		private JSONObjectCallback callback;
-		
+
 		public NewsTask(JSONObjectCallback callback) {
 			this.callback = callback;
 		}
-		
+
 		@Override
 		protected JSONObject doInBackground(Params... params) {
 			try {
 				// Create an HTTP request using Apache's HTTP client library
-				String path = "/news/list" + (params.length > 0 ? "?" + params[0].getParam() : "");
+				String path = "/news/list"
+						+ (params.length > 0 ? "?" + params[0].getParam() : "");
 				HttpGet request = new HttpGet(createURI(path));
 				request.setHeader("DevKey", Config.DEV_KEY);
 				request.setHeader("Accept", "application/json");
-				authenticate(request);
-	
-				for(Header header : request.getAllHeaders()) {
-					Log.d("NewsTask", "Header: " + header.getName() + " = " + header.getValue());
+				authenticate(request, callback.getContext());
+
+				for (Header header : request.getAllHeaders()) {
+					Log.d("NewsTask", "Header: " + header.getName() + " = "
+							+ header.getValue());
 				}
 				// Execute the request using an HttpClient
 				HttpResponse response = httpClient.execute(request);
 				HttpEntity responseEntity = response.getEntity();
-				if(response.getStatusLine().getStatusCode() != 200) {
-					return exceptionToJSON(new Exception("Server responded with status code " + response.getStatusLine().getStatusCode()));
-				} else {
-					// Consume the HTTP response and create a JSONObject from content
-					String content = new String(consumeStream(responseEntity.getContent()));
+				int statusCode = response.getStatusLine().getStatusCode();
+				if (statusCode == 403) {
+					return exceptionToJSON(new AuthenticationException(
+							CREDENTIALS_INVALID));
+				} else if (statusCode == 200) {
+					// Consume the HTTP response and create a JSONObject from
+					// content
+					String content = new String(
+							consumeStream(responseEntity.getContent()));
 					Log.d("NewsTask", "Received content:\n" + content);
 					return new JSONObject(content);
+				} else {
+					return exceptionToJSON(new Exception(
+							"Server responded with status code "
+									+ response.getStatusLine().getStatusCode()));
 				}
-			} catch(Exception e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 				return exceptionToJSON(e);
 			}
 		}
-		
+
 		@Override
 		protected void onPostExecute(JSONObject result) {
-			if(result.has("error")) {
+			if (result.has("error")) {
 				callback.onError(result);
 			} else {
 				callback.onComplete(result);
 			}
 		}
-		
+
 		public static class Params {
-			
+
 			public int s;
-			
+
 			public Params() {
 				this(0);
 			}
-			
+
 			public Params(int s) {
 				this.s = s;
 			}
-			
+
 			public String getParam() {
 				return "s=" + s;
 			}
-			
+
 		}
-		
+
 	}
-	
+
 	public static interface JSONObjectCallback {
-		
+
+		public Context getContext();
+
 		public void onComplete(JSONObject object);
+
 		public void onError(JSONObject object);
-		
+
 	}
-	
+
 }

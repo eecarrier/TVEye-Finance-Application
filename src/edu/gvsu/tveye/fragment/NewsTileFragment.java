@@ -30,6 +30,8 @@ import edu.gvsu.tveye.util.ImageDownloadTask.ImageCallback;
 
 /**
  * NewsTileFragment is a set of stories seen on the NewsGridActivity screen.
+ * This uses the v4 support package Fragment because it is embedded in a
+ * ViewPager.
  * 
  * @author gregzavitz
  */
@@ -62,7 +64,7 @@ public class NewsTileFragment extends Fragment {
 	}
 
 	public void createTiles() throws JSONException {
-		LinearLayout[] tile_group = new LinearLayout[] {
+		final LinearLayout[] tile_group = new LinearLayout[] {
 				(LinearLayout) getView().findViewById(R.id.news_tile_row_1),
 				(LinearLayout) getView().findViewById(R.id.news_tile_row_2) };
 
@@ -73,7 +75,7 @@ public class NewsTileFragment extends Fragment {
 					: weightSum / 3;
 			
 			JSONObject story = set.getJSONObject(i);
-			View tile = inflater.inflate(R.layout.news_tile, null);
+			final View tile = inflater.inflate(R.layout.news_tile, null);
 			tile.setTag(story);
 			tile.setLayoutParams(new LinearLayout.LayoutParams(0,
 					LayoutParams.FILL_PARENT, tileWeight));
@@ -84,7 +86,20 @@ public class NewsTileFragment extends Fragment {
 			
 			tile.setOnClickListener(new OnClickListener() {
 				public void onClick(View v) {
-					getActivity().startActivity(intent);
+					/* TODO:
+					 * When swiping simply take up the whole row. Hide the other nodes.
+					 * Show the readability version. Rather than going to a new screen
+					 * simply expand and change the embedded fragment.
+					 */
+					for(LinearLayout group : tile_group) {
+						for(int i = 0; i < group.getChildCount(); i++) {
+							View child = group.getChildAt(i);
+							if(child != tile) {
+								child.setVisibility(View.GONE);
+							}
+						}
+					}
+					//getActivity().startActivity(intent);
 				}
 			});
 

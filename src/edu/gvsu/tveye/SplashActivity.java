@@ -3,6 +3,7 @@ package edu.gvsu.tveye;
 import org.json.JSONObject;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -41,6 +42,10 @@ public class SplashActivity extends Activity {
 						public void onComplete(JSONObject object) {
 							Toast.makeText(SplashActivity.this, "Received response!", Toast.LENGTH_LONG).show();
 							responseView.setText(object.toString());
+						}
+						
+						public Context getContext() {
+							return SplashActivity.this;
 						}
 					}).execute(new APIWrapper.RegisterTask.Params("test-no-6@email.com", "motomoto", "John", "Smith"));
 				} catch (Exception e) {
