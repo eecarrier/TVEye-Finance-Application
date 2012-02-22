@@ -7,14 +7,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.text.format.DateUtils;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Html;
-import android.text.format.DateFormat;
+import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -36,9 +35,8 @@ import edu.gvsu.tveye.util.ImageDownloadTask.ImageCallback;
  */
 public class NewsTileFragment extends Fragment {
 
-	public static final int VERTICAL = 0, HORIZONTAL = 1;
 	private JSONArray set;
-	private int orientation = VERTICAL, position;
+	private int position;
 
 	public NewsTileFragment(JSONArray set, int position) {
 		this.set = set;
@@ -57,77 +55,68 @@ public class NewsTileFragment extends Fragment {
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		try {
-			populate();
+			createTiles();
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
 	}
 
-	private void setTileOrientation(View view, int orientation) {
-		this.orientation = orientation;
-		LinearLayout tiles = (LinearLayout) view.findViewById(R.id.news_tiles);
-		LinearLayout[] tile_group = new LinearLayout[] {
-				(LinearLayout) view.findViewById(R.id.news_tile_row_1),
-				(LinearLayout) view.findViewById(R.id.news_tile_row_2) };
-		tiles.setOrientation(orientation == HORIZONTAL ? LinearLayout.HORIZONTAL
-				: LinearLayout.VERTICAL);
-		tile_group[0]
-				.setOrientation(orientation == HORIZONTAL ? LinearLayout.VERTICAL
-						: LinearLayout.HORIZONTAL);
-		tile_group[1]
-				.setOrientation(orientation == HORIZONTAL ? LinearLayout.VERTICAL
-						: LinearLayout.HORIZONTAL);
-	}
-
-	public void populate() throws JSONException {
+	public void createTiles() throws JSONException {
 		LinearLayout[] tile_group = new LinearLayout[] {
 				(LinearLayout) getView().findViewById(R.id.news_tile_row_1),
 				(LinearLayout) getView().findViewById(R.id.news_tile_row_2) };
 
 		LayoutInflater inflater = getActivity().getLayoutInflater();
 		for (int i = 0; i < set.length(); i++) {
-			final JSONObject story = set.getJSONObject(i);
 			float weightSum = tile_group[i / 3].getWeightSum();
 			float tileWeight = i < 3 ? (i == 0 ? weightSum / 2 : weightSum / 4)
 					: weightSum / 3;
-			final View tile = inflater.inflate(R.layout.news_tile, null);
+			
+			JSONObject story = set.getJSONObject(i);
+			View tile = inflater.inflate(R.layout.news_tile, null);
+			tile.setTag(story);
 			tile.setLayoutParams(new LinearLayout.LayoutParams(0,
 					LayoutParams.FILL_PARENT, tileWeight));
+
+			final Intent intent = new Intent(getActivity(),
+					NewsArticleActivity.class);
+			intent.putExtra("metadata", story.toString());
+			
 			tile.setOnClickListener(new OnClickListener() {
 				public void onClick(View v) {
-					Intent intent = new Intent(getActivity(),
-							NewsArticleActivity.class);
-					intent.putExtra("metadata", story.toString());
 					getActivity().startActivity(intent);
 				}
 			});
 
-			final TextView title = (TextView) tile
-					.findViewById(R.id.news_title), content = (TextView) tile
-					.findViewById(R.id.news_content), timestamp = (TextView) tile
-					.findViewById(R.id.news_timestamp);
-			title.setText(Html.fromHtml(story.getString("title")));
-			content.setText(Html.fromHtml(story.getString("content")));
-			timestamp.setText(formatDate(story));
-			if (story.has("imageUrl")) {
-				final ImageView picture = (ImageView) tile
-						.findViewById(R.id.news_picture);
-				new ImageDownloadTask(new ImageCallback() {
-					public void imageFailed(String url) {
-						picture.setVisibility(View.GONE);
-					}
-
-					public void imageDownloaded(String url, Bitmap bitmap) {
-						picture.setLayoutParams(new FrameLayout.LayoutParams(
-								LayoutParams.FILL_PARENT, (int) (tile
-										.getMeasuredHeight() * 0.33f)));
-						picture.setImageBitmap(bitmap);
-						title.setBackgroundColor(Color.argb(0xbb, 0x37, 0x39,
-								0x37));
-					}
-				}).execute(story.getString("imageUrl"));
-			}
+			populateTile(tile, story);
 			tile_group[i / 3].addView(tile);
+		}
+	}
+
+	private void populateTile(final View tile, JSONObject story)
+			throws JSONException {
+		final TextView title = (TextView) tile.findViewById(R.id.news_title);
+		TextView content = (TextView) tile.findViewById(R.id.news_content);
+		TextView timestamp = (TextView) tile.findViewById(R.id.news_timestamp);
+		title.setText(Html.fromHtml(story.getString("title")));
+		content.setText(Html.fromHtml(story.getString("content")));
+		timestamp.setText(formatDate(story));
+		if (story.has("imageUrl")) {
+			final ImageView picture = (ImageView) tile
+					.findViewById(R.id.news_picture);
+			new ImageDownloadTask(new ImageCallback() {
+				public void imageFailed(String url) {
+					picture.setVisibility(View.GONE);
+				}
+
+				public void imageDownloaded(String url, Bitmap bitmap) {
+					picture.setLayoutParams(new FrameLayout.LayoutParams(
+							LayoutParams.FILL_PARENT, (int) (tile
+									.getMeasuredHeight() * 0.33f)));
+					picture.setImageBitmap(bitmap);
+					title.setBackgroundColor(Color.argb(0xbb, 0x37, 0x39, 0x37));
+				}
+			}).execute(story.getString("imageUrl"));
 		}
 	}
 

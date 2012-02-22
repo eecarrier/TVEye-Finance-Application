@@ -6,8 +6,7 @@ import android.app.AlertDialog;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
-import android.support.v4.view.ViewPager.OnPageChangeListener;
-import android.util.Log;
+import android.support.v4.view.ViewPager.SimpleOnPageChangeListener;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -40,7 +39,7 @@ public class NewsGridActivity extends FragmentActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.news_pager);
 		pager = (ViewPager) findViewById(R.id.pager);
-		pager.setOnPageChangeListener(new OnPageChangeListener() {
+		pager.setOnPageChangeListener(new SimpleOnPageChangeListener() {
 			public void onPageSelected(int page) {
 				if (page < adapter.getCount() - 1) {
 					more.startAnimation(bump);
@@ -49,12 +48,6 @@ public class NewsGridActivity extends FragmentActivity {
 					more.startAnimation(hide);
 					more.setVisibility(View.GONE);
 				}
-			}
-
-			public void onPageScrolled(int arg0, float arg1, int arg2) {
-			}
-
-			public void onPageScrollStateChanged(int arg0) {
 			}
 		});
 		more = (TextView) findViewById(R.id.more);
