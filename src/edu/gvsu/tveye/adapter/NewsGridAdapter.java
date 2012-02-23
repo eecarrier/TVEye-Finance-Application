@@ -18,6 +18,11 @@ public class NewsGridAdapter extends FragmentPagerAdapter {
 		this.response = response;
 	}
 	
+	public void setData(JSONObject object) {
+		response = object;
+		notifyDataSetChanged();
+	}
+	
 	public int getCount() {
 		try {
 			return (int) Math.ceil(response.getJSONArray("list").length() / 6);

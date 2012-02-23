@@ -1,5 +1,6 @@
 package edu.gvsu.tveye.fragment;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 import org.apache.http.impl.cookie.DateParseException;
@@ -11,14 +12,17 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.text.Html;
 import android.text.format.DateUtils;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -39,6 +43,7 @@ public class NewsTileFragment extends Fragment {
 
 	private JSONArray set;
 	private int position;
+	private boolean expanded = false;
 
 	public NewsTileFragment(JSONArray set, int position) {
 		this.set = set;
@@ -67,55 +72,113 @@ public class NewsTileFragment extends Fragment {
 		final LinearLayout[] tile_group = new LinearLayout[] {
 				(LinearLayout) getView().findViewById(R.id.news_tile_row_1),
 				(LinearLayout) getView().findViewById(R.id.news_tile_row_2) };
+		tile_group[0].setTag(new Float(0.5));
+		tile_group[1].setTag(new Float(0.5));
 
 		LayoutInflater inflater = getActivity().getLayoutInflater();
 		for (int i = 0; i < set.length(); i++) {
 			float weightSum = tile_group[i / 3].getWeightSum();
 			float tileWeight = i < 3 ? (i == 0 ? weightSum / 2 : weightSum / 4)
 					: weightSum / 3;
-			
-			JSONObject story = set.getJSONObject(i);
+
+			final JSONObject story = set.getJSONObject(i);
 			final View tile = inflater.inflate(R.layout.news_tile, null);
-			tile.setTag(story);
+			tile.setTag(new Float(tileWeight));
+			final LinearLayout group = tile_group[i / 3];
 			tile.setLayoutParams(new LinearLayout.LayoutParams(0,
 					LayoutParams.FILL_PARENT, tileWeight));
-
-			final Intent intent = new Intent(getActivity(),
-					NewsArticleActivity.class);
-			intent.putExtra("metadata", story.toString());
 			
 			tile.setOnClickListener(new OnClickListener() {
 				public void onClick(View v) {
-					/* TODO:
-					 * When swiping simply take up the whole row. Hide the other nodes.
-					 * Show the readability version. Rather than going to a new screen
-					 * simply expand and change the embedded fragment.
-					 */
-					for(LinearLayout group : tile_group) {
-						for(int i = 0; i < group.getChildCount(); i++) {
-							View child = group.getChildAt(i);
-							if(child != tile) {
-								child.setVisibility(View.GONE);
-							}
-						}
-					}
-					//getActivity().startActivity(intent);
+					/*animate(tile, group, (expanded = !expanded));
+					animate(group, (LinearLayout) group.getParent(), expanded);*/
+					Intent intent = new Intent(getActivity(), NewsArticleActivity.class);
+					intent.putExtra("metadata", story.toString());
+					getActivity().startActivity(intent);
 				}
 			});
 
 			populateTile(tile, story);
-			tile_group[i / 3].addView(tile);
+			group.addView(tile);
 		}
 	}
+	
+	private void animate(View tile, final LinearLayout parent, boolean expand) {
+		final int length = 300, delay = 50, steps = length / delay;
+	
+		final AnimationRule showRule = new AnimationRule(tile, expand ? parent.getWeightSum() : ((Float) tile.getTag()).floatValue(), steps);
+		final ArrayList<AnimationRule> hideRules = new ArrayList<AnimationRule>();
+		for(View child : getSiblings(tile))
+			hideRules.add(new AnimationRule(child, expand ? 0 : ((Float) child.getTag()).floatValue(), steps));
+		final Handler handler = new Handler();
+		handler.post(new Runnable() {
+			int step = steps;
+			public void run() {
+				showRule.step();
+				for(AnimationRule hideRule : hideRules)
+					hideRule.step();
+				parent.requestLayout();
+				if(--step > 0) {
+					handler.postDelayed(this, delay);
+				}
+			}
+		});
+	}
+	
+	private View[] getSiblings(View view) {
+		if(view.getParent() instanceof ViewGroup) {
+			ViewGroup parent = (ViewGroup) view.getParent();
+			View[] siblings = new View[parent.getChildCount() - 1];
+			int j = 0;
+			for(int i = 0; j < siblings.length; i++) {
+				View child = parent.getChildAt(i);
+				if(child != view)
+					siblings[j++] = child;
+			}
+			return siblings;
+		} else {
+			return new View[0];
+		}
+	}
+	
+	private static class AnimationRule {
+		
+		private float start, step_weight;
+		private int step = 0;
+		private View view;
+		
+		public AnimationRule(View view, float goal, float steps) {
+			this.view = view;
 
-	private void populateTile(final View tile, JSONObject story)
+			LinearLayout.LayoutParams params = ((LinearLayout.LayoutParams) view.getLayoutParams());
+			start = params.weight;
+			step_weight = (goal - start) / steps;
+		}
+		
+		public void step() {
+			float next = start + step_weight * ++step;
+			LinearLayout.LayoutParams params = ((LinearLayout.LayoutParams) view.getLayoutParams());
+			params.weight = next;
+		}
+		
+	}
+
+	private void populateTile(final View tile, final JSONObject story)
 			throws JSONException {
 		final TextView title = (TextView) tile.findViewById(R.id.news_title);
 		TextView content = (TextView) tile.findViewById(R.id.news_content);
 		TextView timestamp = (TextView) tile.findViewById(R.id.news_timestamp);
+		Button read = (Button) tile.findViewById(R.id.read_button);
 		title.setText(Html.fromHtml(story.getString("title")));
 		content.setText(Html.fromHtml(story.getString("content")));
 		timestamp.setText(formatDate(story));
+		read.setOnClickListener(new OnClickListener() {
+			public void onClick(View v) {
+				Intent intent = new Intent(getActivity(), NewsArticleActivity.class);
+				intent.putExtra("metadata", story.toString());
+				getActivity().startActivity(intent);
+			}
+		});
 		if (story.has("imageUrl")) {
 			final ImageView picture = (ImageView) tile
 					.findViewById(R.id.news_picture);
@@ -151,5 +214,5 @@ public class NewsTileFragment extends Fragment {
 		}
 		return "";
 	}
-
+	
 }
