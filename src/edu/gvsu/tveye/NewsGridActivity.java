@@ -4,11 +4,9 @@ import org.apache.http.auth.AuthenticationException;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.app.AlertDialog;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.SimpleOnPageChangeListener;
@@ -28,6 +26,7 @@ import edu.gvsu.tveye.api.APIWrapper.JSONObjectCallback;
 import edu.gvsu.tveye.fragment.LoginFragment;
 import edu.gvsu.tveye.fragment.LoginFragment.LoginCallback;
 import edu.gvsu.tveye.util.TVEyePreferences;
+import edu.gvsu.tveye.view.DropDown;
 
 /**
  * NewsGridActivity is the primary screen used for displaying NewsTileFragments
@@ -40,12 +39,14 @@ public class NewsGridActivity extends FragmentActivity implements LoginCallback 
 	private NewsGridAdapter adapter;
 	private ViewPager pager;
 	private TextView more;
-	private Animation hide, show, bump, drop;
+	private DropDown dropdown;
+	private Animation hide, show, bump, fade_in, fade_out;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.news_pager);
+		dropdown = (DropDown) findViewById(R.id.drop_down);
 		pager = (ViewPager) findViewById(R.id.pager);
 		pager.setOnPageChangeListener(new SimpleOnPageChangeListener() {
 			public void onPageSelected(int page) {
@@ -71,31 +72,10 @@ public class NewsGridActivity extends FragmentActivity implements LoginCallback 
 		hide = AnimationUtils.loadAnimation(this, R.anim.slide_out_to_right);
 		show = AnimationUtils.loadAnimation(this, R.anim.slide_in_from_right);
 		bump = AnimationUtils.loadAnimation(this, R.anim.bump);
-		drop = AnimationUtils.loadAnimation(this, R.anim.drop_in);
+		fade_in = AnimationUtils.loadAnimation(this, R.anim.fade_in);
+		fade_out = AnimationUtils.loadAnimation(this, R.anim.fade_out);
 		loadCache();
 		loadNews();
-	}
-
-	private void dropdownMessage(String message, int length) {
-		TextView dropdown = (TextView) findViewById(R.id.drop_down);
-		dropdown.setText(message);
-		dropdown.setVisibility(View.VISIBLE);
-		dropdown.startAnimation(drop);
-		if(length > -1) {
-			new Handler().postDelayed(new Runnable() {
-				public void run() {
-					dismissDropdown();
-				}
-			}, length);
-		}
-	}
-	
-	private void dismissDropdown() {
-		TextView dropdown = (TextView) findViewById(R.id.drop_down);
-		if(dropdown.getVisibility() != View.GONE) {
-			dropdown.startAnimation(drop);
-			dropdown.setVisibility(View.GONE);
-		}
 	}
 
 	private void loadCache() {
@@ -106,7 +86,7 @@ public class NewsGridActivity extends FragmentActivity implements LoginCallback 
 						getSupportFragmentManager(), preferences.getCache())));
 				more.setVisibility(View.VISIBLE);
 				more.startAnimation(show);
-				dropdownMessage("The content displayed below is outdated", -1);
+				dropdown.showMessage("The content displayed below is outdated", dropdown.messageBackground);
 			} catch (JSONException e) {
 				e.printStackTrace();
 			}
@@ -126,16 +106,13 @@ public class NewsGridActivity extends FragmentActivity implements LoginCallback 
 				String message = object.optString("error", "Error");
 				if (type.equals(AuthenticationException.class.getName())) {
 					if (message.equals(APIWrapper.CREDENTIALS_INVALID)) {
+						dropdown.showMessage("Login credentials are invalid... Try again.", dropdown.errorBackground, 3000);
 						displayLogin();
 					} else if (message.equals(APIWrapper.CREDENTIALS_MISSING)) {
 						displayLogin();
 					}
 				} else {
-					AlertDialog.Builder builder = new AlertDialog.Builder(
-							NewsGridActivity.this);
-					builder.setTitle("Failed to load news");
-					builder.setMessage(object.toString());
-					builder.create().show();
+					dropdown.showMessage("Unable to retrieve the latest news", dropdown.errorBackground, 3000);
 				}
 			}
 
@@ -146,14 +123,11 @@ public class NewsGridActivity extends FragmentActivity implements LoginCallback 
 					pager.setAdapter((adapter = new NewsGridAdapter(
 							getSupportFragmentManager(), object)));
 				else {
-					dismissDropdown();
-					Animation fade_out = AnimationUtils.loadAnimation(NewsGridActivity.this, R.anim.fade_out);
+					dropdown.dismiss();
 					fade_out.setAnimationListener(new AnimationListener() {
-
 						public void onAnimationEnd(Animation animation) {
 							adapter.setData(object);
 							pager.setVisibility(View.VISIBLE);
-							Animation fade_in = AnimationUtils.loadAnimation(NewsGridActivity.this, R.anim.fade_in);
 							pager.startAnimation(fade_in);
 						}
 

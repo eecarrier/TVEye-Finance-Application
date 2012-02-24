@@ -16,7 +16,6 @@ import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.text.Html;
 import android.text.format.DateUtils;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -43,7 +42,6 @@ public class NewsTileFragment extends Fragment {
 
 	private JSONArray set;
 	private int position;
-	private boolean expanded = false;
 
 	public NewsTileFragment(JSONArray set, int position) {
 		this.set = set;
@@ -103,7 +101,7 @@ public class NewsTileFragment extends Fragment {
 		}
 	}
 	
-	private void animate(View tile, final LinearLayout parent, boolean expand) {
+	public void animate(View tile, final LinearLayout parent, boolean expand) {
 		final int length = 300, delay = 50, steps = length / delay;
 	
 		final AnimationRule showRule = new AnimationRule(tile, expand ? parent.getWeightSum() : ((Float) tile.getTag()).floatValue(), steps);
@@ -192,7 +190,7 @@ public class NewsTileFragment extends Fragment {
 							LayoutParams.FILL_PARENT, (int) (tile
 									.getMeasuredHeight() * 0.33f)));
 					picture.setImageBitmap(bitmap);
-					title.setBackgroundColor(Color.argb(0xbb, 0x37, 0x39, 0x37));
+					title.setBackgroundColor(Color.argb(0xAA, 0xFF, 0xFF, 0xFF));
 				}
 			}).execute(story.getString("imageUrl"));
 		}

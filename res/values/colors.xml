@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+    <color name="background">#FFFFFAD5</color>
+    <color name="action_bar">#FFDDD7B1</color>
+    
+    <color name="dropdown_text">#FF0F565D</color>
+    <color name="dropdown_text_shadow">#88000000</color>
+    <color name="dropdown_error">#FFC97B6B</color>
+    <color name="dropdown_message">#FFFFD34E</color>
+    <color name="dropdown_default">#FFDB9E36</color>
+
+    <color name="tile_background">#0F000000</color>
+    <color name="tile_stroke">#18000000</color>
+    <color name="tile_heading">#FF0F565D</color>
+    <color name="tile_heading_shadow">#88000000</color>
+    <color name="tile_timestamp">#FF666666</color>
+    <color name="tile_separator">#FFA2A2A2</color>
+    
+    <color name="more_background">#FF0F565D</color>
+    <color name="more_text">#FFFFFAD5</color>
+    <color name="more_text_shadow">#88000000</color>
+</resources>

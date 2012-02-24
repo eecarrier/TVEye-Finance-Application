@@ -3,22 +3,12 @@
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:orientation="vertical">
-	    <TextView
+        android:orientation="vertical"
+        android:background="@color/background">
+	    <edu.gvsu.tveye.view.DropDown 
 	        android:id="@+id/drop_down"
-	        android:layout_width="fill_parent"
-	        android:layout_height="wrap_content"
-	        android:background="#30A6D1"
-	        android:gravity="center_horizontal"
-	        android:padding="3dip"
-	        android:shadowColor="#0076A1"
-	        android:shadowDx="1"
-	        android:shadowDy="1"
-	        android:shadowRadius="2"
-	        android:textColor="#000"
-	        android:textSize="20dip"
-	        android:textStyle="bold"
-	        android:visibility="gone" />
+			style="@style/DropDown"
+			android:visibility="gone" />
 	    <android.support.v4.view.ViewPager
 	        android:id="@+id/pager"
 	        android:layout_width="fill_parent"
@@ -35,13 +25,13 @@
 	        android:paddingRight="16dip"
 	        android:paddingTop="3dip"
 	        android:paddingBottom="3dip"
-	        android:background="#30A6D1"
-	        android:shadowColor="#0076A1"
+	        android:background="@color/more_background"
+	        android:shadowColor="@color/more_text_shadow"
 	        android:shadowDx="1"
 	        android:shadowDy="1"
 	        android:shadowRadius="2"
 	        android:textSize="20dip"
-	        android:textColor="#000"
+	        android:textColor="@color/more_text"
 	        android:textStyle="bold"
 	        android:visibility="gone" />
 </merge>
