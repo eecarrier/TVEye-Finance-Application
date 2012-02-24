@@ -129,6 +129,9 @@ public class NewsGridActivity extends FragmentActivity implements LoginCallback 
 							adapter.setData(object);
 							pager.setVisibility(View.VISIBLE);
 							pager.startAnimation(fade_in);
+							if(pager.getCurrentItem() > 0) {
+								pager.setCurrentItem(0, true);
+							}
 						}
 
 						public void onAnimationRepeat(Animation animation) {
