@@ -6,6 +6,7 @@ import org.json.JSONObject;
 
 import android.app.FragmentTransaction;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
@@ -19,7 +20,6 @@ import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.view.animation.AnimationUtils;
 import android.widget.TextView;
-import android.widget.Toast;
 import edu.gvsu.tveye.adapter.NewsGridAdapter;
 import edu.gvsu.tveye.api.APIWrapper;
 import edu.gvsu.tveye.api.APIWrapper.JSONObjectCallback;
@@ -165,8 +165,8 @@ public class NewsGridActivity extends FragmentActivity implements LoginCallback 
 			break;
 		}
 		case R.id.menu_settings: {
-			Toast.makeText(this, "The settings menu should open",
-					Toast.LENGTH_LONG).show();
+			Intent intent = new Intent(this, SettingsActivity.class);
+			startActivityForResult(intent, 1);
 			break;
 		}
 		case R.id.menu_refresh: {
