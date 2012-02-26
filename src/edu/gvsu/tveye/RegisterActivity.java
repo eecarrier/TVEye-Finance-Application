@@ -48,7 +48,7 @@ public class RegisterActivity extends Activity {
 
 						public Context getContext() {
 							// TODO Auto-generated method stub
-							return null;
+							return RegisterActivity.this;
 						}
 					}).execute(new APIWrapper.RegisterTask.Params(email.getText().toString(), password.getText().toString(), first.getText().toString(), last.getText().toString()));
 				} catch (Exception e) {
