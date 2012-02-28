@@ -10,4 +10,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Use fake credentials" />
+    <Button android:id="@+id/create_account_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Create a new account >>" />
 </LinearLayout>

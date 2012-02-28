@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import edu.gvsu.tveye.R;
 import edu.gvsu.tveye.util.TVEyePreferences;
+import android.app.FragmentTransaction;
 
 public class LoginFragment extends DialogFragment {
 
@@ -30,6 +31,17 @@ public class LoginFragment extends DialogFragment {
 						"gzavitz@gmail.com", "motorola");
 				callback.setCredentials();
 				dismiss();
+			}
+
+		});
+		
+		Button new_account_button = (Button) view.findViewById(R.id.create_account_button);
+		new_account_button.setOnClickListener(new OnClickListener() {
+
+			public void onClick(View v) {
+				FragmentTransaction ft = getFragmentManager().beginTransaction();
+				ft.addToBackStack(null);
+				new RegisterFragment(callback).show(ft, "register");
 			}
 
 		});
