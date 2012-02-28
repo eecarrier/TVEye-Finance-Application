@@ -117,7 +117,13 @@ public class APIWrapper {
 						Log.d("RegisterTask", "Received content:\n" + content);
 						return new JSONObject(content);
 					}
-				} catch (Exception e) {
+				} catch (IOException e) {
+					e.printStackTrace();
+					return exceptionToJSON(e);
+				} catch (JSONException e) {
+					e.printStackTrace();
+					return exceptionToJSON(e);
+				} catch (URISyntaxException e) {
 					e.printStackTrace();
 					return exceptionToJSON(e);
 				}
@@ -185,10 +191,6 @@ public class APIWrapper {
 				request.setHeader("Accept", "application/json");
 				authenticate(request, callback.getContext());
 
-				for (Header header : request.getAllHeaders()) {
-					Log.d("NewsTask", "Header: " + header.getName() + " = "
-							+ header.getValue());
-				}
 				// Execute the request using an HttpClient
 				HttpResponse response = httpClient.execute(request);
 				HttpEntity responseEntity = response.getEntity();
@@ -208,7 +210,16 @@ public class APIWrapper {
 							"Server responded with status code "
 									+ response.getStatusLine().getStatusCode()));
 				}
-			} catch (Exception e) {
+			} catch (IOException e) {
+				e.printStackTrace();
+				return exceptionToJSON(e);
+			} catch (JSONException e) {
+				e.printStackTrace();
+				return exceptionToJSON(e);
+			} catch (AuthenticationException e) {
+				e.printStackTrace();
+				return exceptionToJSON(e);
+			} catch (URISyntaxException e) {
 				e.printStackTrace();
 				return exceptionToJSON(e);
 			}
@@ -239,6 +250,70 @@ public class APIWrapper {
 				return "s=" + s;
 			}
 
+		}
+
+	}
+
+	public static class NewsDetailsTask extends
+			AsyncTask<JSONObject, Void, JSONObject> {
+
+		private JSONObjectCallback callback;
+
+		public NewsDetailsTask(JSONObjectCallback callback) {
+			this.callback = callback;
+		}
+
+		@Override
+		protected JSONObject doInBackground(JSONObject ... stories) {
+			try {
+				// Create an HTTP request using Apache's HTTP client library
+				String path = "/news/details?newsId=" + stories[0].optInt("id", 0);
+				HttpGet request = new HttpGet(createURI(path));
+				request.setHeader("DevKey", Config.DEV_KEY);
+				request.setHeader("Accept", "application/json");
+				authenticate(request, callback.getContext());
+				
+				// Execute the request using an HttpClient
+				HttpResponse response = httpClient.execute(request);
+				HttpEntity responseEntity = response.getEntity();
+				int statusCode = response.getStatusLine().getStatusCode();
+				if (statusCode == 403) {
+					return exceptionToJSON(new AuthenticationException(
+							CREDENTIALS_INVALID));
+				} else if (statusCode == 200) {
+					// Consume the HTTP response and create a JSONObject from
+					// content
+					String content = new String(
+							consumeStream(responseEntity.getContent()));
+					Log.d("NewsDetailsTask", "Received content:\n" + content);
+					return new JSONObject(content);
+				} else {
+					return exceptionToJSON(new Exception(
+							"Server responded with status code "
+									+ response.getStatusLine().getStatusCode()));
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+				return exceptionToJSON(e);
+			} catch (JSONException e) {
+				e.printStackTrace();
+				return exceptionToJSON(e);
+			} catch (AuthenticationException e) {
+				e.printStackTrace();
+				return exceptionToJSON(e);
+			} catch (URISyntaxException e) {
+				e.printStackTrace();
+				return exceptionToJSON(e);
+			}
+		}
+
+		@Override
+		protected void onPostExecute(JSONObject result) {
+			if (result.has("error")) {
+				callback.onError(result);
+			} else {
+				callback.onComplete(result);
+			}
 		}
 
 	}

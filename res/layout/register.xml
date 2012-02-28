@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:weightSum="6"
+	android:paddingLeft="50dp"
+	android:paddingRight="50dp"
+	android:paddingBottom="20dp">
+	
+    <TextView
+        android:id="@+id/reg_title"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="1"
+        android:gravity="center_vertical|center_horizontal"
+        android:text="Register An Account (It's Free!)"
+        android:textColor="#CCCCCC"
+        android:textSize="32sp" />
+    
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	    android:layout_width="fill_parent"
+	    android:layout_height="fill_parent"
+	    android:layout_marginTop="20dp"
+	    android:orientation="horizontal"
+	    android:layout_weight="1"
+	    android:gravity="fill_vertical"
+	    android:weightSum="4">
+        <TextView
+            android:id="@+id/reg_firstLabel"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:text="First Name:"
+            android:textColor="#AAAAAA"
+            android:textSize="20sp" />
+	    <EditText
+	        android:id="@+id/reg_first"
+	        android:layout_width="0dp"
+	        android:layout_height="fill_parent"
+	        android:layout_marginLeft="10dp"
+	        android:background="#ABCDEF"
+	        android:hint="John"
+	        android:layout_weight="3"
+	        android:textSize="20sp" />
+	</LinearLayout>
+	
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	    android:layout_width="fill_parent"
+	    android:layout_height="fill_parent"
+	    android:layout_marginTop="20dp"
+	    android:orientation="horizontal"
+	    android:layout_weight="1"
+	    android:weightSum="4">
+        <TextView
+            android:id="@+id/reg_lastLabel"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:text="Last Name:"
+            android:textColor="#AAAAAA"
+            android:textSize="20sp" />
+	    <EditText
+	        android:id="@+id/reg_last"
+	        android:layout_width="0dp"
+	        android:layout_height="fill_parent"
+	        android:layout_marginLeft="10dp"
+	        android:layout_weight="3"
+	        android:background="#ABCDEF"
+	        android:hint="Doe"
+	        android:textSize="20sp" />
+
+	</LinearLayout>
+    
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	    android:layout_width="fill_parent"
+	    android:layout_height="fill_parent"
+	    android:layout_marginTop="20dp"
+	    android:orientation="horizontal"
+	    android:layout_weight="1"
+	    android:weightSum="4">
+        <TextView
+            android:id="@+id/reg_emailLabel"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:text="E-mail Address:"
+            android:textColor="#AAAAAA"
+            android:textSize="20sp" />
+	    <EditText
+	        android:id="@+id/reg_email"
+	        android:layout_width="0dp"
+	        android:layout_height="fill_parent"
+	        android:layout_marginLeft="10dp"
+	        android:layout_weight="3"
+	        android:background="#ABCDEF"
+	        android:hint="john.doe@example.com"
+	        android:inputType="textEmailAddress"
+	        android:textSize="20sp" />
+	</LinearLayout>
+	
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	    android:layout_width="fill_parent"
+	    android:layout_height="fill_parent"
+	    android:layout_marginTop="20dp"
+	    android:orientation="horizontal"
+	    android:layout_weight="1"
+	    android:weightSum="4">
+        <TextView
+            android:id="@+id/reg_passwordLabel"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:text="Password"
+            android:textColor="#AAAAAA"
+            android:textSize="20sp" />
+
+	    <EditText
+	        android:id="@+id/reg_password"
+	        android:layout_width="0dp"
+	        android:layout_height="fill_parent"
+	        android:layout_marginLeft="10dp"
+	        android:layout_weight="3"
+	        android:background="#ABCDEF"
+	        android:inputType="textPassword" 
+	        android:textSize="20sp" />
+
+	</LinearLayout>
+
+     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	    android:layout_width="fill_parent"
+	    android:layout_height="fill_parent"
+	    android:layout_marginTop="20dp"
+	    android:orientation="horizontal"
+	    android:layout_weight="1"
+	    android:gravity="center"
+	    android:weightSum="3">
+	    <View
+	        android:layout_width="0dp"
+	        android:layout_height="fill_parent"
+	        android:layout_weight="1"/>
+       <Button
+           android:id="@+id/reg_regButton"
+           android:layout_width="0dp"
+           android:layout_height="fill_parent"
+           android:layout_weight="1"
+           android:background="#42EB6C"
+           android:text="Register"
+           android:textSize="20sp"
+           android:textColor="#000000"/>
+       <View
+	        android:layout_width="0dp"
+	        android:layout_height="fill_parent"
+	        android:layout_weight="1"/>
+	</LinearLayout>
+    
+</LinearLayout>
