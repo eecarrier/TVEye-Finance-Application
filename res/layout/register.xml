@@ -81,7 +81,7 @@
         android:layout_gravity="right"
         android:background="#ececec"
         android:layout_marginTop="10sp"
-        android:padding="10sp"
+        android:padding="15sp"
         android:text="Register >>" />
         
 </LinearLayout>

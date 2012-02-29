@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.OnClickListener;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -37,7 +38,7 @@ public class RegisterFragment extends DialogFragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.register, null);
-		setStyle(STYLE_NO_TITLE, getTheme());
+		getDialog().requestWindowFeature(Window.FEATURE_NO_TITLE);
 		Button register_button = (Button) view.findViewById(R.id.reg_regButton);
 		firstName = (TextView) view.findViewById(R.id.reg_first);
 		lastName = (TextView) view.findViewById(R.id.reg_last);
