@@ -15,7 +15,7 @@ public class NewsGridAdapter extends FragmentPagerAdapter {
 	
 	public NewsGridAdapter(FragmentManager fm, JSONObject response) {
 		super(fm);
-		this.response = response;
+		setData(response);
 	}
 	
 	public void setData(JSONObject object) {
@@ -45,5 +45,5 @@ public class NewsGridAdapter extends FragmentPagerAdapter {
 		}
 		return null;
 	}
-
+	
 }
