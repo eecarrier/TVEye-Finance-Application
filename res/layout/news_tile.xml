@@ -17,12 +17,37 @@
 	        android:layout_gravity="bottom"
 	        style="@style/TileHeading" />
     </FrameLayout>
-    <TextView
-        android:id="@+id/news_timestamp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="@color/tile_timestamp"
-        android:textStyle="italic" />
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+	    <ImageView
+	        android:id="@+id/news_icon"
+	        android:layout_width="16dip"
+	        android:layout_height="16dip"
+	        android:scaleType="fitXY"
+	        android:layout_alignParentLeft="true"
+	        android:gravity="center_vertical"
+	        android:layout_margin="2dip"
+	        android:layout_marginRight="5dip" />
+	    <TextView
+	        android:id="@+id/news_origin"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:textColor="@color/tile_timestamp"
+	        android:textStyle="italic"
+	        android:layout_toRightOf="@id/news_icon"
+	        android:gravity="center_vertical"
+	        android:paddingRight="5dip" />
+	    <TextView
+	        android:id="@+id/news_timestamp"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:textColor="@color/tile_timestamp"
+	        android:textStyle="italic"
+	        android:layout_toRightOf="@id/news_origin"
+	        android:layout_alignParentRight="true"
+	        android:gravity="center_vertical|right" />
+    </RelativeLayout>
     <View
         android:layout_width="match_parent"
         android:layout_height="1dip"
@@ -31,13 +56,8 @@
         android:background="@color/tile_separator" />
     <TextView
         android:id="@+id/news_content"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-    <Button 
-        android:id="@+id/read_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Read" 
-        android:layout_gravity="right|bottom"
-        android:visibility="gone" />
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:fadingEdge="vertical"
+        android:textSize="16dip" />
 </LinearLayout>

@@ -12,7 +12,7 @@
     <color name="tile_background">#0F000000</color>
     <color name="tile_stroke">#18000000</color>
     <color name="tile_heading">#FF0F565D</color>
-    <color name="tile_heading_shadow">#88000000</color>
+    <color name="tile_heading_shadow">#99FFFFFF</color>
     <color name="tile_timestamp">#FF666666</color>
     <color name="tile_separator">#FFA2A2A2</color>
     
