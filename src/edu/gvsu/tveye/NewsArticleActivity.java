@@ -3,8 +3,14 @@ package edu.gvsu.tveye;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import edu.gvsu.tveye.api.APIWrapper;
+import edu.gvsu.tveye.api.APIWrapper.JSONObjectCallback;
+import edu.gvsu.tveye.api.APIWrapper.StringCallback;
+
 import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
@@ -29,6 +35,20 @@ public class NewsArticleActivity extends Activity {
 			story = new JSONObject(getIntent().getExtras().getString("metadata"));
 			setTitle(story.getString("title"));
 			webView.loadUrl(story.getString("link"));
+			new APIWrapper.NewsDetailsTask(new StringCallback() {
+				
+				public void onError(Exception e) {
+					Log.d("NewsDetailsTask", e.toString());
+				}
+				
+				public void onComplete(String data) {
+					Log.d("NewsDetailsTask", data);
+				}
+				
+				public Context getContext() {
+					return NewsArticleActivity.this;
+				}
+			}).execute(story);
 		} catch (JSONException e) {
 			e.printStackTrace();
 			// TODO: Let the user know that something went wrong loading the story
