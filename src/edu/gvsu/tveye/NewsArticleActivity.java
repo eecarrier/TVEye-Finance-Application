@@ -16,6 +16,7 @@ import android.view.View.OnClickListener;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Button;
 import android.text.Html;
 import android.widget.Toast;
 import android.text.format.DateUtils;
@@ -35,15 +36,15 @@ public class NewsArticleActivity extends Activity {
 	//how to get actual content
 	private JSONObject story;
 	private JSONArray tickers;
-	private TextView[] newsRefs;
-	private TextView newsRef0;
-	private TextView newsRef1;
-	private TextView newsRef2;
-	private TextView newsRef3;
-	private TextView newsRef4;
-	private TextView newsRef5;
-	private TextView newsRef6;
-	private TextView newsRef7;
+	private Button[] newsRefs;
+	private Button newsRef0;
+	private Button newsRef1;
+	private Button newsRef2;
+	private Button newsRef3;
+	private Button newsRef4;
+	private Button newsRef5;
+	private Button newsRef6;
+	private Button newsRef7;
 	private ImageButton thumbsUp;
 	private ImageButton thumbsDown;
 	private ImageView picture;
@@ -100,22 +101,22 @@ public class NewsArticleActivity extends Activity {
 
 				public void onComplete(final String data) {
 					
-					newsRefs = new TextView[8];
-					newsRef0 = (TextView) findViewById(R.id.news_detail_ref0);
-					newsRef1 = (TextView) findViewById(R.id.news_detail_ref1);
-					newsRef2 = (TextView) findViewById(R.id.news_detail_ref2);
-					newsRef3 = (TextView) findViewById(R.id.news_detail_ref3);
-					newsRef4 = (TextView) findViewById(R.id.news_detail_ref4);
-					newsRef5 = (TextView) findViewById(R.id.news_detail_ref5);
-					newsRef6 = (TextView) findViewById(R.id.news_detail_ref6);
-					newsRef7 = (TextView) findViewById(R.id.news_detail_ref7);
+					newsRefs = new Button[8];
+					newsRef0 = (Button) findViewById(R.id.news_detail_ref0);
+					newsRef1 = (Button) findViewById(R.id.news_detail_ref1);
+					newsRef2 = (Button) findViewById(R.id.news_detail_ref2);
+					newsRef3 = (Button) findViewById(R.id.news_detail_ref3);
+					newsRef4 = (Button) findViewById(R.id.news_detail_ref4);
+					newsRef5 = (Button) findViewById(R.id.news_detail_ref5);
+					newsRef6 = (Button) findViewById(R.id.news_detail_ref6);
+					newsRef7 = (Button) findViewById(R.id.news_detail_ref7);
 					thumbsUp = (ImageButton) findViewById(R.id.thumbs_up);
 					thumbsUp.setOnClickListener(thumbsUpClick);
 					thumbsDown = (ImageButton) findViewById(R.id.thumbs_down);
 					thumbsDown.setOnClickListener(thumbsDownClick);
-					picture = (ImageView) findViewById(R.id.news_detail_picture);
+					//picture = (ImageView) findViewById(R.id.news_detail_picture);
 					//title = (TextView) findViewById(R.id.news_detail_title);
-					timestamp = (TextView) findViewById(R.id.news_detail_timestamp);
+					//timestamp = (TextView) findViewById(R.id.news_detail_timestamp);
 					content = (TextView) findViewById(R.id.news_detail_content);
 					
 					//title.setText(Html.fromHtml(story.getString("title")));
@@ -142,7 +143,7 @@ public class NewsArticleActivity extends Activity {
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
-					timestamp.setText(formatDate(story));
+					//timestamp.setText(formatDate(story));
 					/*if (story.has("imageUrl")) {
 						try {
 							new ImageDownloadTask(new ImageCallback() {

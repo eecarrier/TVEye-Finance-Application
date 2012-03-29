@@ -24,7 +24,8 @@
 			android:layout_margin="3dp"
 			android:layout_weight="1"
 			android:src="@drawable/thumbs_up"
-			android:background="@android:color/transparent"/>
+			android:background="@android:color/transparent"
+			android:clickable="true"/>
 	    <ImageButton
 			android:id="@+id/thumbs_down"
 			android:layout_width="0dp"
@@ -33,7 +34,8 @@
 			android:layout_margin="3dp"
 			android:layout_weight="1"
 			android:src="@drawable/thumbs_down"
-			android:background="@android:color/transparent"/>
+			android:background="@android:color/transparent"
+			android:clickable="true"/>
 	    <View
 	        android:layout_width="0dp"
 	        android:layout_height="fill_parent"
@@ -48,9 +50,9 @@
 	    <LinearLayout
 	        android:id="@+id/article_box"
 	        android:layout_width="fill_parent"
-	        android:weightSum="9"
+	        android:weightSum="20"
 		    android:layout_height="fill_parent"
-		    android:background="#E0EFFF"
+		    android:background="#E6F8FF"
 		    android:orientation="horizontal"
 		    android:paddingTop="20dp"
 		    android:paddingBottom="20dp"
@@ -61,7 +63,7 @@
 			<ScrollView
 			    android:id="@+id/news_detials_scrollStory"
 			    android:layout_height="fill_parent"
-			    android:layout_weight="6"
+			    android:layout_weight="16"
 			    android:layout_width="0dp"
 			    android:scrollbars="vertical">
 			    <LinearLayout 
@@ -69,31 +71,30 @@
 			      	android:orientation="vertical"
 			      	android:layout_margin="10dp"
 			      	android:layout_width="fill_parent">
-					<ImageView
+					<!-- <ImageView
 						android:id="@+id/news_detail_picture"
 						android:layout_width="fill_parent"
 						android:layout_height="wrap_content"
 						android:scaleType="fitXY" />
-					<!-- <TextView
+					<TextView
 						android:id="@+id/news_detail_title"
 						android:layout_gravity="bottom"
 						style="@style/TileHeading"
-						android:text="This is a Fake Title" /> -->
+						android:text="This is a Fake Title" />
 				    <TextView
 				        android:id="@+id/news_detail_timestamp"
 				        android:layout_width="match_parent"
 				        android:layout_height="wrap_content"
 				        android:textColor="@color/tile_timestamp"
 				        android:textStyle="italic"
-				        android:text = "This is a fake timestamp"/>
+				        android:text = "This is a fake timestamp"/>-->
 				    <View
 				        android:layout_width="match_parent"
 				        android:layout_height="10dp"/>
 				    <TextView
 				        android:id="@+id/news_detail_content"
 				        android:layout_width="match_parent"
-				        android:layout_height="wrap_content"
-				        android:text="Fake story/Fake story/Fake story/Fake story/Fake story/Fake story" />
+				        android:layout_height="wrap_content"/>
 				</LinearLayout>
 			</ScrollView>
 			
@@ -106,7 +107,7 @@
 		        android:id="@+id/reference_bar"
 		        android:layout_width="0dp"
 		        android:layout_height="fill_parent"
-		        android:layout_weight="2"
+		        android:layout_weight="3"
 		        android:orientation="vertical"
 		        android:weightSum="10"
 		        >
@@ -114,46 +115,65 @@
 		            android:layout_width="match_parent"
 		            android:layout_height="0dp"
 		            android:layout_weight="1"/>
-		        <TextView
+		        <Button
 		            android:id="@+id/news_detail_ref0"
 		            android:layout_width="match_parent"
 		            android:layout_height="0dp"
-		            android:layout_weight="1" />
-		        <TextView
+		            android:layout_weight="1"
+		            android:background="@android:color/transparent"
+		            android:clickable="true"
+		            android:text="Reference1"/>
+		        <Button
 		            android:id="@+id/news_detail_ref1"
 		            android:layout_width="match_parent"
 		            android:layout_height="0dp"
-		            android:layout_weight="1" />
-		        <TextView
+		            android:layout_weight="1"
+		            android:background="@android:color/transparent"
+		            android:clickable="true"
+		            android:text="Reference2"/>
+		        <Button
 		            android:id="@+id/news_detail_ref2"
 		            android:layout_width="match_parent"
 		            android:layout_height="0dp"
-		            android:layout_weight="1" />
-		        <TextView
+		            android:layout_weight="1"
+		            android:background="@android:color/transparent"
+		            android:clickable="true" />
+		        <Button
 		            android:id="@+id/news_detail_ref3"
 		            android:layout_width="match_parent"
 		            android:layout_height="0dp"
-		            android:layout_weight="1" />
-		        <TextView
+		            android:layout_weight="1"
+		            android:background="@android:color/transparent"
+		            android:clickable="true" />
+		        <Button
 		            android:id="@+id/news_detail_ref4"
 		            android:layout_width="match_parent"
 		            android:layout_height="0dp"
-		            android:layout_weight="1" />
-		        <TextView
+		            android:layout_weight="1"
+		        	android:background="@android:color/transparent"
+		        	android:clickable="true" />
+		        <Button
 		            android:id="@+id/news_detail_ref5"
 		            android:layout_width="match_parent"
 		            android:layout_height="0dp"
-		            android:layout_weight="1" />
-		        <TextView
+		            android:layout_weight="1"
+		            android:background="@android:color/transparent"
+		            android:clickable="true" />
+		        <Button
 		            android:id="@+id/news_detail_ref6"
 		            android:layout_width="match_parent"
 		            android:layout_height="0dp"
-		            android:layout_weight="1" />
-		        <TextView
+		            android:layout_weight="1"
+		            android:background="@android:color/transparent"
+		            android:clickable="true" />
+		        <Button
 		            android:id="@+id/news_detail_ref7"
 		            android:layout_width="match_parent"
 		            android:layout_height="0dp"
-		            android:layout_weight="1" />
+		            android:layout_weight="1"
+		            android:background="@android:color/transparent"
+		            android:clickable="true"
+		            android:text="Reference8"/>
 		        <View 
 		            android:layout_width="match_parent"
 		            android:layout_height="0dp"
