@@ -7,20 +7,25 @@ import org.json.JSONObject;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import edu.gvsu.tveye.fragment.NewsTileFragment;
 
-public class NewsGridAdapter extends FragmentPagerAdapter {
+public class NewsGridAdapter extends FragmentStatePagerAdapter {
 	
 	private JSONObject response;
 	
 	public NewsGridAdapter(FragmentManager fm, JSONObject response) {
 		super(fm);
-		this.response = response;
+		setData(response);
 	}
 	
 	public void setData(JSONObject object) {
 		response = object;
 		notifyDataSetChanged();
+	}
+	
+	public JSONObject getData() {
+		return response;
 	}
 	
 	public int getCount() {
@@ -39,11 +44,11 @@ public class NewsGridAdapter extends FragmentPagerAdapter {
 			for(int i = 0; i < 6 && position * 6 + i < list.length(); i++) {
 				set.put(list.getJSONObject(position * 6 + i));
 			}
-			return new NewsTileFragment(set, position);
+			return NewsTileFragment.newInstance(set, position);
 		} catch(JSONException e) {
 			e.printStackTrace();
 		}
 		return null;
 	}
-
+	
 }

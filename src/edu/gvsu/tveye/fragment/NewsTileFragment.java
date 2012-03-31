@@ -1,8 +1,9 @@
 package edu.gvsu.tveye.fragment;
 
-import java.util.ArrayList;
+import java.net.URISyntaxException;
 import java.util.Date;
 
+import org.apache.http.client.utils.URIUtils;
 import org.apache.http.impl.cookie.DateParseException;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -12,10 +13,10 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.text.Html;
 import android.text.format.DateUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -42,11 +43,26 @@ public class NewsTileFragment extends Fragment {
 
 	private JSONArray set;
 	private int position;
-
-	public NewsTileFragment(JSONArray set, int position) {
-		this.set = set;
-		this.position = position;
+	
+	public static NewsTileFragment newInstance(JSONArray set, int position) {
+		NewsTileFragment fragment = new NewsTileFragment();
+		Bundle bundle = new Bundle();
+		bundle.putInt("position", position);
+		bundle.putString("set", set.toString());
+		fragment.setArguments(bundle);
+		return fragment;
 	}
+	
+	@Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        position = getArguments() != null ? getArguments().getInt("position") : 0;
+        try {
+			set = new JSONArray(getArguments() != null ? getArguments().getString("set") : "[]");
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+    }
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -85,12 +101,11 @@ public class NewsTileFragment extends Fragment {
 			final LinearLayout group = tile_group[i / 3];
 			tile.setLayoutParams(new LinearLayout.LayoutParams(0,
 					LayoutParams.FILL_PARENT, tileWeight));
-			
+
 			tile.setOnClickListener(new OnClickListener() {
 				public void onClick(View v) {
-					/*animate(tile, group, (expanded = !expanded));
-					animate(group, (LinearLayout) group.getParent(), expanded);*/
-					Intent intent = new Intent(getActivity(), NewsArticleActivity.class);
+					Intent intent = new Intent(getActivity(),
+							NewsArticleActivity.class);
 					intent.putExtra("metadata", story.toString());
 					getActivity().startActivity(intent);
 				}
@@ -100,86 +115,22 @@ public class NewsTileFragment extends Fragment {
 			group.addView(tile);
 		}
 	}
-	
-	public void animate(View tile, final LinearLayout parent, boolean expand) {
-		final int length = 300, delay = 50, steps = length / delay;
-	
-		final AnimationRule showRule = new AnimationRule(tile, expand ? parent.getWeightSum() : ((Float) tile.getTag()).floatValue(), steps);
-		final ArrayList<AnimationRule> hideRules = new ArrayList<AnimationRule>();
-		for(View child : getSiblings(tile))
-			hideRules.add(new AnimationRule(child, expand ? 0 : ((Float) child.getTag()).floatValue(), steps));
-		final Handler handler = new Handler();
-		handler.post(new Runnable() {
-			int step = steps;
-			public void run() {
-				showRule.step();
-				for(AnimationRule hideRule : hideRules)
-					hideRule.step();
-				parent.requestLayout();
-				if(--step > 0) {
-					handler.postDelayed(this, delay);
-				}
-			}
-		});
-	}
-	
-	private View[] getSiblings(View view) {
-		if(view.getParent() instanceof ViewGroup) {
-			ViewGroup parent = (ViewGroup) view.getParent();
-			View[] siblings = new View[parent.getChildCount() - 1];
-			int j = 0;
-			for(int i = 0; j < siblings.length; i++) {
-				View child = parent.getChildAt(i);
-				if(child != view)
-					siblings[j++] = child;
-			}
-			return siblings;
-		} else {
-			return new View[0];
-		}
-	}
-	
-	private static class AnimationRule {
-		
-		private float start, step_weight;
-		private int step = 0;
-		private View view;
-		
-		public AnimationRule(View view, float goal, float steps) {
-			this.view = view;
-
-			LinearLayout.LayoutParams params = ((LinearLayout.LayoutParams) view.getLayoutParams());
-			start = params.weight;
-			step_weight = (goal - start) / steps;
-		}
-		
-		public void step() {
-			float next = start + step_weight * ++step;
-			LinearLayout.LayoutParams params = ((LinearLayout.LayoutParams) view.getLayoutParams());
-			params.weight = next;
-		}
-		
-	}
 
 	private void populateTile(final View tile, final JSONObject story)
 			throws JSONException {
 		final TextView title = (TextView) tile.findViewById(R.id.news_title);
 		TextView content = (TextView) tile.findViewById(R.id.news_content);
 		TextView timestamp = (TextView) tile.findViewById(R.id.news_timestamp);
-		Button read = (Button) tile.findViewById(R.id.read_button);
+		TextView origin = (TextView) tile.findViewById(R.id.news_origin);
+		final ImageView icon = (ImageView) tile.findViewById(R.id.news_icon);
+		final ImageView picture = (ImageView) tile
+				.findViewById(R.id.news_picture);
 		title.setText(Html.fromHtml(story.getString("title")));
 		content.setText(Html.fromHtml(story.getString("content")));
 		timestamp.setText(formatDate(story));
-		read.setOnClickListener(new OnClickListener() {
-			public void onClick(View v) {
-				Intent intent = new Intent(getActivity(), NewsArticleActivity.class);
-				intent.putExtra("metadata", story.toString());
-				getActivity().startActivity(intent);
-			}
-		});
+		String origin_path = story.getJSONObject("source").getString("origin");
+		origin.setText(origin_path);
 		if (story.has("imageUrl")) {
-			final ImageView picture = (ImageView) tile
-					.findViewById(R.id.news_picture);
 			new ImageDownloadTask(new ImageCallback() {
 				public void imageFailed(String url) {
 					picture.setVisibility(View.GONE);
@@ -190,9 +141,29 @@ public class NewsTileFragment extends Fragment {
 							LayoutParams.FILL_PARENT, (int) (tile
 									.getMeasuredHeight() * 0.33f)));
 					picture.setImageBitmap(bitmap);
-					title.setBackgroundColor(Color.argb(0xAA, 0xFF, 0xFF, 0xFF));
+					title.setBackgroundColor(getResources().getColor(
+							R.color.tile_heading_shadow));
 				}
 			}).execute(story.getString("imageUrl"));
+		}
+		if (story.has("source")) {
+
+			try {
+				String path = URIUtils.createURI("http", "www.google.com", -1,
+						"/s2/favicons", "domain=" + origin_path, null)
+						.toString();
+				new ImageDownloadTask(new ImageCallback() {
+
+					public void imageFailed(String url) {
+					}
+
+					public void imageDownloaded(String url, Bitmap bitmap) {
+						icon.setImageBitmap(bitmap);
+					}
+				}).execute(path);
+			} catch (URISyntaxException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -212,5 +183,5 @@ public class NewsTileFragment extends Fragment {
 		}
 		return "";
 	}
-	
+
 }

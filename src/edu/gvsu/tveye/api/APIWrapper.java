@@ -44,7 +44,7 @@ public class APIWrapper {
 	private static HttpClient httpClient = new DefaultHttpClient();
 
 	private static URI createURI(String method) throws URISyntaxException {
-		return URIUtils.createURI("http", HOSTNAME, PORT, method, "", null);
+		return URIUtils.createURI("http", HOSTNAME, PORT, method, null, null);
 	}
 
 	private static void authenticate(HttpRequest request, Context context)
@@ -98,7 +98,7 @@ public class APIWrapper {
 					// Create an HTTP request using Apache's HTTP client library
 					HttpPost request = new HttpPost(createURI("/register"));
 					request.setEntity(params[0].getEntity());
-					request.setHeader("DevKey", Config.DEV_KEY);
+					request.setHeader("Pragma", Config.DEV_KEY);
 					request.setHeader("Accept", "application/json");
 
 					// Execute the request using an HttpClient
@@ -187,7 +187,7 @@ public class APIWrapper {
 				String path = "/news/list"
 						+ (params.length > 0 ? "?" + params[0].getParam() : "");
 				HttpGet request = new HttpGet(createURI(path));
-				request.setHeader("DevKey", Config.DEV_KEY);
+				request.setHeader("Pragma", Config.DEV_KEY);
 				request.setHeader("Accept", "application/json");
 				authenticate(request, callback.getContext());
 
@@ -255,67 +255,78 @@ public class APIWrapper {
 	}
 
 	public static class NewsDetailsTask extends
-			AsyncTask<JSONObject, Void, JSONObject> {
+			AsyncTask<JSONObject, Void, Object> {
 
-		private JSONObjectCallback callback;
+		private StringCallback callback;
 
-		public NewsDetailsTask(JSONObjectCallback callback) {
+		public NewsDetailsTask(StringCallback callback) {
 			this.callback = callback;
 		}
 
 		@Override
-		protected JSONObject doInBackground(JSONObject ... stories) {
+		protected Object doInBackground(JSONObject ... stories) {
 			try {
 				// Create an HTTP request using Apache's HTTP client library
-				String path = "/news/details?newsId=" + stories[0].optInt("id", 0);
+				String path = "/news/details?newsID=" + stories[0].optInt("id", 0);
 				HttpGet request = new HttpGet(createURI(path));
-				request.setHeader("DevKey", Config.DEV_KEY);
-				request.setHeader("Accept", "application/json");
+				request.setHeader("Pragma", Config.DEV_KEY);
+				request.setHeader("Accept", "text/html");
 				authenticate(request, callback.getContext());
 				
 				// Execute the request using an HttpClient
 				HttpResponse response = httpClient.execute(request);
 				HttpEntity responseEntity = response.getEntity();
 				int statusCode = response.getStatusLine().getStatusCode();
+				Log.d("NewsDetails", request.getURI().toString());
+				for(Header header : request.getAllHeaders()) {
+					Log.d(header.getName(), header.getValue());
+				}
 				if (statusCode == 403) {
-					return exceptionToJSON(new AuthenticationException(
-							CREDENTIALS_INVALID));
+					return new AuthenticationException(
+							CREDENTIALS_INVALID);
 				} else if (statusCode == 200) {
 					// Consume the HTTP response and create a JSONObject from
 					// content
 					String content = new String(
 							consumeStream(responseEntity.getContent()));
 					Log.d("NewsDetailsTask", "Received content:\n" + content);
-					return new JSONObject(content);
+					return content;
 				} else {
-					return exceptionToJSON(new Exception(
+					return new Exception(
 							"Server responded with status code "
-									+ response.getStatusLine().getStatusCode()));
+									+ response.getStatusLine().getStatusCode());
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
-				return exceptionToJSON(e);
-			} catch (JSONException e) {
-				e.printStackTrace();
-				return exceptionToJSON(e);
+				return e;
 			} catch (AuthenticationException e) {
 				e.printStackTrace();
-				return exceptionToJSON(e);
+				return e;
 			} catch (URISyntaxException e) {
 				e.printStackTrace();
-				return exceptionToJSON(e);
+				return e;
 			}
 		}
 
 		@Override
-		protected void onPostExecute(JSONObject result) {
-			if (result.has("error")) {
-				callback.onError(result);
-			} else {
-				callback.onComplete(result);
+		protected void onPostExecute(Object result) {
+			if (result instanceof Exception) {
+				callback.onError((Exception) result);
+			} else if(result instanceof String){
+				callback.onComplete((String) result);
 			}
 		}
 
+	}
+	
+	public static interface StringCallback {
+		
+		public Context getContext();
+
+		public void onComplete(String data);
+
+		public void onError(Exception error);
+		
 	}
 
 	public static interface JSONObjectCallback {

@@ -7,10 +7,12 @@ import org.json.JSONObject;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.SimpleOnPageChangeListener;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -20,6 +22,7 @@ import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.view.animation.AnimationUtils;
 import android.widget.TextView;
+import android.widget.Toast;
 import edu.gvsu.tveye.adapter.NewsGridAdapter;
 import edu.gvsu.tveye.api.APIWrapper;
 import edu.gvsu.tveye.api.APIWrapper.JSONObjectCallback;
@@ -46,6 +49,11 @@ public class NewsGridActivity extends FragmentActivity implements LoginCallback 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.news_pager);
+		findViewById(android.R.id.home).setOnClickListener(new OnClickListener() {
+			public void onClick(View v) {
+				pager.setCurrentItem(0, true);
+			}
+		});
 		dropdown = (DropDown) findViewById(R.id.drop_down);
 		pager = (ViewPager) findViewById(R.id.pager);
 		pager.setOnPageChangeListener(new SimpleOnPageChangeListener() {
@@ -96,7 +104,9 @@ public class NewsGridActivity extends FragmentActivity implements LoginCallback 
 	private void displayLogin() {
 		FragmentTransaction ft = getFragmentManager().beginTransaction();
 		ft.addToBackStack(null);
-		new LoginFragment(this).show(ft, "login");
+		LoginFragment login = new LoginFragment(this);
+		login.setCancelable(false);
+		login.show(ft, "login");
 	}
 
 	private void loadNews() {
@@ -162,24 +172,37 @@ public class NewsGridActivity extends FragmentActivity implements LoginCallback 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
+		case android.R.id.home: {
+			// not working for some reason.
+			Toast.makeText(this, "Home pressed", 1).show();
+			if(pager.getCurrentItem() > 0) {
+				pager.setCurrentItem(0, true);
+			}
+			return true;
+		}
 		case R.id.menu_logout: {
 			new TVEyePreferences(this).clearCredentials();
 			displayLogin();
-			break;
+			return true;
 		}
 		case R.id.menu_settings: {
 			Intent intent = new Intent(this, SettingsActivity.class);
 			startActivityForResult(intent, 1);
-			break;
+			return true;
 		}
 		case R.id.menu_refresh: {
 			loadNews();
-			break;
-		}
-		default:
 			return true;
 		}
-		return false;
+		default:
+            return super.onOptionsItemSelected(item);
+		}
+	}
+	
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+		  Log.d("GridActivity", "config change");
+	  super.onConfigurationChanged(newConfig);
 	}
 
 	public void setCredentials() {
