@@ -47,32 +47,46 @@ public class RegisterFragment extends DialogFragment {
 		register_button.setOnClickListener(new OnClickListener() {
 
 			public void onClick(View v) {
-				try {
+				if (firstName.getText().length() > 0
+						&& lastName.getText().length() > 0
+						&& email.getText().length() > 0
+						&& password.getText().length() > 0) {
 
-					Toast.makeText(getActivity(), "Registering your account",
-							Toast.LENGTH_LONG).show();
+					try {
 
-					new APIWrapper.RegisterTask(new JSONObjectCallback() {
-						public void onError(JSONObject object) {
-							Toast.makeText(getActivity(), "Received error!",
-									Toast.LENGTH_LONG).show();
-						}
+						Toast.makeText(getActivity(),
+								"Registering your account", Toast.LENGTH_LONG)
+								.show();
 
-						public void onComplete(JSONObject object) {
-							Toast.makeText(getActivity(), "You have Successfully Registered!",
-									Toast.LENGTH_LONG).show();
-							dismiss();
-						}
+						new APIWrapper.RegisterTask(new JSONObjectCallback() {
+							public void onError(JSONObject object) {
+								Toast.makeText(getActivity(),
+										"Received error!", Toast.LENGTH_LONG)
+										.show();
+							}
 
-						public Context getContext() {
-							// TODO Auto-generated method stub
-							return getActivity();
-						}
-					}).execute(new APIWrapper.RegisterTask.Params(email
-							.getText().toString(), password.getText()
-							.toString(), firstName.getText().toString(),
-							lastName.getText().toString()));
-				} catch (Exception e) {
+							public void onComplete(JSONObject object) {
+								Toast.makeText(getActivity(),
+										"You have Successfully Registered!",
+										Toast.LENGTH_LONG).show();
+								new TVEyePreferences(getActivity())
+										.setCredentials(email.getText()
+												.toString(), password.getText()
+												.toString());
+								callback.setCredentials();
+								dismiss();
+							}
+
+							public Context getContext() {
+								// TODO Auto-generated method stub
+								return getActivity();
+							}
+						}).execute(new APIWrapper.RegisterTask.Params(email
+								.getText().toString(), password.getText()
+								.toString(), firstName.getText().toString(),
+								lastName.getText().toString()));
+					} catch (Exception e) {
+					}
 				}
 			}
 		});

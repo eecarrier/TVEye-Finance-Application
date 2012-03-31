@@ -7,7 +7,6 @@
     android:orientation="vertical"
 	android:padding="25sp"
     android:textColor="#666666"
-    android:background="#e6f8ff"
     android:weightSum="6">
 
     <TextView
@@ -79,9 +78,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="right"
-        android:background="#ececec"
         android:layout_marginTop="10sp"
-        android:padding="15sp"
         android:text="Register >>" />
         
 </LinearLayout>
