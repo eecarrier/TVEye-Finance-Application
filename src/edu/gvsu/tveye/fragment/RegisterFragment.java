@@ -2,9 +2,7 @@ package edu.gvsu.tveye.fragment;
 
 import org.json.JSONObject;
 
-import android.app.ActionBar;
 import android.app.DialogFragment;
-import android.app.FragmentTransaction;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -13,11 +11,9 @@ import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 import edu.gvsu.tveye.R;
-import edu.gvsu.tveye.RegisterActivity;
 import edu.gvsu.tveye.api.APIWrapper;
 import edu.gvsu.tveye.api.APIWrapper.JSONObjectCallback;
 import edu.gvsu.tveye.fragment.LoginFragment.LoginCallback;
