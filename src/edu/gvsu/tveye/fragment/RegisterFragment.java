@@ -59,8 +59,13 @@ public class RegisterFragment extends DialogFragment {
 						}
 
 						public void onComplete(JSONObject object) {
-							Toast.makeText(getActivity(), "You have Successfully Registered!",
+							Toast.makeText(getActivity(),
+									"You have Successfully Registered!",
 									Toast.LENGTH_LONG).show();
+							new TVEyePreferences(getActivity()).setCredentials(
+									email.getText().toString(), password
+											.getText().toString());
+							callback.setCredentials();
 							dismiss();
 						}
 

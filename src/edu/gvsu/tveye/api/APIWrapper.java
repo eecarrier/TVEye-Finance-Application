@@ -49,7 +49,7 @@ public class APIWrapper {
 
 	private static void authenticate(HttpRequest request, Context context)
 			throws AuthenticationException {
-		TVEyePreferences preferences = new TVEyePreferences(context);
+		/*TVEyePreferences preferences = new TVEyePreferences(context);
 		if (!preferences.hasCredentials())
 			throw new AuthenticationException(CREDENTIALS_MISSING);
 		else {
@@ -57,7 +57,8 @@ public class APIWrapper {
 					.getCredentials();
 			request.addHeader(new BasicSchemeFactory().newInstance(
 					request.getParams()).authenticate(credentials, request));
-		}
+		}*/
+		request.addHeader("Authorization", "Basic dG5yNjg0QG1vdG9yb2xhLmNvbToxMjM0NTY=");
 	}
 
 	private static byte[] consumeStream(InputStream input) throws IOException {
@@ -314,6 +315,72 @@ public class APIWrapper {
 				callback.onError((Exception) result);
 			} else if(result instanceof String){
 				callback.onComplete((String) result);
+			}
+		}
+
+	}
+
+	public static class GetAnalyticsTask extends
+			AsyncTask<Void, Void, JSONObject> {
+
+		private JSONObjectCallback callback;
+
+		public GetAnalyticsTask(JSONObjectCallback callback) {
+			this.callback = callback;
+		}
+
+		@Override
+		protected JSONObject doInBackground(Void ... v) {
+			/*try {
+				// Create an HTTP request using Apache's HTTP client library
+				String path = "/my/analytics";
+				HttpGet request = new HttpGet(createURI(path));
+				request.setHeader("Pragma", Config.DEV_KEY);
+				request.setHeader("Accept", "application/json");
+				authenticate(request, callback.getContext());
+				
+				// Execute the request using an HttpClient
+				HttpResponse response = httpClient.execute(request);
+				HttpEntity responseEntity = response.getEntity();
+				int statusCode = response.getStatusLine().getStatusCode();
+				// TODO: don't forget to do this
+				for(Header header : request.getAllHeaders()) {
+					Log.d(header.getName(), header.getValue());
+				}
+				if (statusCode == 403) {
+					return new AuthenticationException(
+							CREDENTIALS_INVALID);
+				} else if (statusCode == 200) {
+					// Consume the HTTP response and create a JSONObject from
+					// content
+					String content = new String(
+							consumeStream(responseEntity.getContent()));
+					Log.d("NewsDetailsTask", "Received content:\n" + content);
+					return content;
+				} else {
+					return new Exception(
+							"Server responded with status code "
+									+ response.getStatusLine().getStatusCode());
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+				return e;
+			} catch (AuthenticationException e) {
+				e.printStackTrace();
+				return e;
+			} catch (URISyntaxException e) {
+				e.printStackTrace();
+				return e;
+			}*/
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(JSONObject result) {
+			if (result.has("error")) {
+				callback.onError(result);
+			} else {
+				callback.onComplete(result);
 			}
 		}
 

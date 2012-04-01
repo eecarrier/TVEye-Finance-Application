@@ -44,6 +44,7 @@ public class NewsGridActivity extends FragmentActivity implements LoginCallback 
 	private TextView more;
 	private DropDown dropdown;
 	private Animation hide, show, bump, fade_in, fade_out;
+	private LoginFragment login;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -104,7 +105,7 @@ public class NewsGridActivity extends FragmentActivity implements LoginCallback 
 	private void displayLogin() {
 		FragmentTransaction ft = getFragmentManager().beginTransaction();
 		ft.addToBackStack(null);
-		LoginFragment login = new LoginFragment(this);
+		login = new LoginFragment(this);
 		login.setCancelable(false);
 		login.show(ft, "login");
 	}
@@ -127,6 +128,7 @@ public class NewsGridActivity extends FragmentActivity implements LoginCallback 
 			}
 
 			public void onComplete(final JSONObject object) {
+				Log.d("********", object.toString());
 				more.setVisibility(View.VISIBLE);
 				more.startAnimation(show);
 				if (adapter == null)
@@ -206,6 +208,10 @@ public class NewsGridActivity extends FragmentActivity implements LoginCallback 
 	}
 
 	public void setCredentials() {
+		if(login != null) {
+			login.dismiss();
+			login = null;
+		}
 		loadNews();
 	}
 

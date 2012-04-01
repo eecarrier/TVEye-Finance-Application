@@ -31,7 +31,6 @@ public class LoginFragment extends DialogFragment {
 				new TVEyePreferences(getActivity()).setCredentials(
 						"gzavitz@gmail.com", "motorola");
 				callback.setCredentials();
-				dismiss();
 			}
 
 		});

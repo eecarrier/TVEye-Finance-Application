@@ -115,9 +115,10 @@ public class NewsTileFragment extends Fragment {
 			group.addView(tile);
 		}
 	}
-
+	//04-01 13:13:07.440: D/NewsTileFragment(26385): {"id":1510,"isAcquired":"true","author":"ed carson and scott stoddard","interestLevel":0.15797263194432132,"title":"Surprising Jobs Data Show Jobless Down But So Are Payrolls","tickers":[],"source":"Investors Economy","origin":"www.investors.com","isIndexed":"false","publishDate":"2 years ago","url":"http:\/\/news.investors.com\/Article.aspx?id=520390"}
 	private void populateTile(final View tile, final JSONObject story)
 			throws JSONException {
+		Log.d("NewsTileFragment" , story.toString());
 		final TextView title = (TextView) tile.findViewById(R.id.news_title);
 		TextView content = (TextView) tile.findViewById(R.id.news_content);
 		TextView timestamp = (TextView) tile.findViewById(R.id.news_timestamp);
@@ -126,9 +127,9 @@ public class NewsTileFragment extends Fragment {
 		final ImageView picture = (ImageView) tile
 				.findViewById(R.id.news_picture);
 		title.setText(Html.fromHtml(story.getString("title")));
-		content.setText(Html.fromHtml(story.getString("content")));
-		timestamp.setText(formatDate(story));
-		String origin_path = story.getJSONObject("source").getString("origin");
+		content.setText(Html.fromHtml(story.optString("content", "Chao Removed me")));
+		timestamp.setText(story.getString("publishDate"));
+		String origin_path = story.getString("origin");
 		origin.setText(origin_path);
 		if (story.has("imageUrl")) {
 			new ImageDownloadTask(new ImageCallback() {
