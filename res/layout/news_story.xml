@@ -1,63 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:weightSum="20"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical"
     android:background="#D1D1D1"
     >
-    
-    <LinearLayout 
-        android:id="@+id/optionsbar_newsDetails"
-	    android:orientation="horizontal"
-	    android:layout_width="fill_parent"
-	    android:layout_height="0dp"
-	    android:background="#F2F2F2"
-      	android:layout_weight="2"
-      	android:weightSum="6">
-      	
-	    <ImageButton
-			android:id="@+id/thumbs_up"
-			android:layout_width="0dp"
-			android:layout_height="fill_parent"
-			android:layout_gravity="center_vertical|center_horizontal"
-			android:layout_margin="3dp"
-			android:layout_weight="1"
-			android:src="@drawable/thumbs_up"
-			android:background="@android:color/transparent"
-			android:clickable="true"/>
-	    <ImageButton
-			android:id="@+id/thumbs_down"
-			android:layout_width="0dp"
-			android:layout_height="fill_parent"
-			android:layout_gravity="center_vertical|center_horizontal"
-			android:layout_margin="3dp"
-			android:layout_weight="1"
-			android:src="@drawable/thumbs_down"
-			android:background="@android:color/transparent"
-			android:clickable="true"/>
-	    <View
-	        android:layout_width="0dp"
-	        android:layout_height="fill_parent"
-	        android:layout_weight="4" />
-	</LinearLayout>
-	
     <RelativeLayout
         android:layout_width="fill_parent"
-        android:layout_height="0dp"
-        android:layout_weight="18" >
+        android:layout_height="fill_parent">
         
 	    <LinearLayout
 	        android:id="@+id/article_box"
 	        android:layout_width="fill_parent"
 	        android:weightSum="20"
 		    android:layout_height="fill_parent"
-		    android:background="#E6F8FF"
+		    android:background="@drawable/story_background"
 		    android:orientation="horizontal"
-		    android:paddingTop="20dp"
-		    android:paddingBottom="20dp"
-		    android:paddingLeft="35dp"
-		    android:paddingRight="35dp"
+		    android:padding="8dp"
+		    android:layout_margin="7dip"
 		    >
 		    
 			<ScrollView
@@ -110,138 +70,29 @@
 		        android:layout_weight="3"
 		        android:orientation="vertical"
 		        android:weightSum="10"
+		        android:paddingTop="5dip"
 		        >
 		        <View 
 		            android:layout_width="match_parent"
 		            android:layout_height="0dp"
 		            android:layout_weight="1"/>
-		        <Button
-		            android:id="@+id/news_detail_ref0"
-		            android:layout_width="match_parent"
-		            android:layout_height="0dp"
-		            android:layout_weight="1"
-		            android:background="@android:color/transparent"
-		            android:clickable="true"
-		            android:text="Reference1"/>
-		        <Button
-		            android:id="@+id/news_detail_ref1"
-		            android:layout_width="match_parent"
-		            android:layout_height="0dp"
-		            android:layout_weight="1"
-		            android:background="@android:color/transparent"
-		            android:clickable="true"
-		            android:text="Reference2"/>
-		        <Button
-		            android:id="@+id/news_detail_ref2"
-		            android:layout_width="match_parent"
-		            android:layout_height="0dp"
-		            android:layout_weight="1"
-		            android:background="@android:color/transparent"
-		            android:clickable="true" />
-		        <Button
-		            android:id="@+id/news_detail_ref3"
-		            android:layout_width="match_parent"
-		            android:layout_height="0dp"
-		            android:layout_weight="1"
-		            android:background="@android:color/transparent"
-		            android:clickable="true" />
-		        <Button
-		            android:id="@+id/news_detail_ref4"
-		            android:layout_width="match_parent"
-		            android:layout_height="0dp"
-		            android:layout_weight="1"
-		        	android:background="@android:color/transparent"
-		        	android:clickable="true" />
-		        <Button
-		            android:id="@+id/news_detail_ref5"
-		            android:layout_width="match_parent"
-		            android:layout_height="0dp"
-		            android:layout_weight="1"
-		            android:background="@android:color/transparent"
-		            android:clickable="true" />
-		        <Button
-		            android:id="@+id/news_detail_ref6"
-		            android:layout_width="match_parent"
-		            android:layout_height="0dp"
-		            android:layout_weight="1"
-		            android:background="@android:color/transparent"
-		            android:clickable="true" />
-		        <Button
-		            android:id="@+id/news_detail_ref7"
-		            android:layout_width="match_parent"
-		            android:layout_height="0dp"
-		            android:layout_weight="1"
-		            android:background="@android:color/transparent"
-		            android:clickable="true"
-		            android:text="Reference8"/>
+		        <ScrollView
+	                android:layout_width="wrap_content"
+	                android:layout_height="fill_parent">
+		            <LinearLayout
+		                android:id="@+id/references"
+		        		android:layout_height="wrap_content"
+		                android:layout_width="wrap_content"
+		                android:orientation="vertical">
+		                
+		            </LinearLayout>
+		        </ScrollView>
 		        <View 
 		            android:layout_width="match_parent"
 		            android:layout_height="0dp"
 		            android:layout_weight="1"/>
 		    </LinearLayout>
 		</LinearLayout>
-		
-	    <View
-	        android:layout_alignParentLeft="true"
-	        android:layout_alignParentTop="true"
-	        android:layout_width="25dp"
-	        android:layout_height="10dp"
-	        android:background="@drawable/article_shadow_br" />
-	    <View
-	        android:layout_alignParentLeft="true"
-	        android:layout_alignParentBottom="true"
-	        android:layout_width="25dp"
-	        android:layout_height="10dp"
-	        android:background="@drawable/article_shadow_tr" />
-		<View
-	        android:layout_alignParentRight="true"
-	        android:layout_alignParentTop="true"
-	        android:layout_width="25dp"
-	        android:layout_height="10dp"
-	        android:background="@drawable/article_shadow_bl" />
-		<View
-	        android:layout_alignParentRight="true"
-	        android:layout_alignParentBottom="true"
-	        android:layout_width="25dp"
-	        android:layout_height="10dp"
-	        android:background="@drawable/article_shadow_tl" />    
-		<View
-		    android:id="@+id/left_shadow"
-	        android:layout_width="25dp"
-	        android:layout_height="fill_parent"
-	        android:background="@drawable/article_shadow_right"
-	        android:layout_alignLeft="@id/article_box"
-	        android:layout_toRightOf="@id/article_box"
-	        android:layout_marginTop="10dp"
-	        android:layout_marginBottom="10dp"
-	     />
-		<View
-		    android:id="@+id/right_shadow"
-	        android:layout_width="25dp"
-	        android:layout_height="fill_parent"
-	        android:background="@drawable/article_shadow_left"
-	        android:layout_alignRight="@id/article_box"
-	        android:layout_toLeftOf="@id/article_box"
-	        android:layout_marginTop="10dp"
-	        android:layout_marginBottom="10dp"/>
- 	<View
-		    android:id="@+id/top_shadow"
-	        android:layout_width="fill_parent"
-	        android:layout_height="10dp"
-	        android:background="@drawable/article_shadow_top"
-	        android:layout_alignBottom="@id/article_box"
-	        android:layout_above="@id/article_box"
-	        android:layout_marginLeft="20dp"
-	        android:layout_marginRight="20dp"/> 
- 	<View
-		    android:id="@+id/bottom_shadow"
-	        android:layout_width="fill_parent"
-	        android:layout_height="10dp"
-	        android:background="@drawable/article_shadow_bottom"
-	        android:layout_alignTop="@id/article_box"
-	        android:layout_below="@id/article_box"
-	        android:layout_marginLeft="20dp"
-	        android:layout_marginRight="20dp"/> 
 	</RelativeLayout>
 
 </LinearLayout>

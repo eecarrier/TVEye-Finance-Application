@@ -1,6 +1,7 @@
 package edu.gvsu.tveye;
 
-import org.apache.http.auth.AuthenticationException;
+import java.util.Date;
+
 import org.apache.http.impl.cookie.DateParseException;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -8,26 +9,22 @@ import org.json.JSONObject;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Button;
 import android.text.Html;
-import android.widget.Toast;
 import android.text.format.DateUtils;
 import android.text.method.LinkMovementMethod;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 import edu.gvsu.tveye.api.APIWrapper;
-import edu.gvsu.tveye.api.APIWrapper.JSONObjectCallback;
-import edu.gvsu.tveye.util.ImageDownloadTask;
-import edu.gvsu.tveye.util.ImageDownloadTask.ImageCallback;
-import edu.gvsu.tveye.view.DropDown;
-
-import java.util.Date;
 
 public class NewsArticleActivity extends Activity {
 	
@@ -36,15 +33,6 @@ public class NewsArticleActivity extends Activity {
 	//how to get actual content
 	private JSONObject story;
 	private JSONArray tickers;
-	private Button[] newsRefs;
-	private Button newsRef0;
-	private Button newsRef1;
-	private Button newsRef2;
-	private Button newsRef3;
-	private Button newsRef4;
-	private Button newsRef5;
-	private Button newsRef6;
-	private Button newsRef7;
 	private ImageButton thumbsUp;
 	private ImageButton thumbsDown;
 	private ImageView picture;
@@ -52,20 +40,6 @@ public class NewsArticleActivity extends Activity {
 	private TextView timestamp;
 	private TextView content;
 	private Toast toast;
-	
-	private OnClickListener thumbsUpClick = new OnClickListener() {
-    	public void onClick(View v) {
-    		Toast t = Toast.makeText(getApplicationContext(), "Thumbs Up!", Toast.LENGTH_SHORT);
-    		t.show();
-    	}
-    };
-    
-    private OnClickListener thumbsDownClick = new OnClickListener() {
-    	public void onClick(View v) {
-    		Toast t = Toast.makeText(getApplicationContext(), "Thumbs Down!", Toast.LENGTH_SHORT);
-    		t.show();
-    	}
-    };
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -100,44 +74,21 @@ public class NewsArticleActivity extends Activity {
 				}
 
 				public void onComplete(final String data) {
-					
-					newsRefs = new Button[8];
-					newsRef0 = (Button) findViewById(R.id.news_detail_ref0);
-					newsRef1 = (Button) findViewById(R.id.news_detail_ref1);
-					newsRef2 = (Button) findViewById(R.id.news_detail_ref2);
-					newsRef3 = (Button) findViewById(R.id.news_detail_ref3);
-					newsRef4 = (Button) findViewById(R.id.news_detail_ref4);
-					newsRef5 = (Button) findViewById(R.id.news_detail_ref5);
-					newsRef6 = (Button) findViewById(R.id.news_detail_ref6);
-					newsRef7 = (Button) findViewById(R.id.news_detail_ref7);
-					thumbsUp = (ImageButton) findViewById(R.id.thumbs_up);
-					thumbsUp.setOnClickListener(thumbsUpClick);
-					thumbsDown = (ImageButton) findViewById(R.id.thumbs_down);
-					thumbsDown.setOnClickListener(thumbsDownClick);
 					//picture = (ImageView) findViewById(R.id.news_detail_picture);
 					//title = (TextView) findViewById(R.id.news_detail_title);
 					//timestamp = (TextView) findViewById(R.id.news_detail_timestamp);
 					content = (TextView) findViewById(R.id.news_detail_content);
 					
 					//title.setText(Html.fromHtml(story.getString("title")));
-					content.setText(Html.fromHtml(data));
+					content.setText(Html.fromHtml(data.substring(data.indexOf("<div class=\'author\'>"))));
 					content.setMovementMethod(LinkMovementMethod.getInstance());
 					try {
+						LinearLayout references = (LinearLayout) findViewById(R.id.references);
 						tickers = story.getJSONArray("tickers");
-						newsRefs[0] = newsRef0;
-						newsRefs[1] = newsRef1;
-						newsRefs[2] = newsRef2;
-						newsRefs[3] = newsRef3;
-						newsRefs[4] = newsRef4;
-						newsRefs[5] = newsRef5;
-						newsRefs[6] = newsRef6;
-						newsRefs[7] = newsRef7;
-						for (int i = 0; i < 8; i++)
-						{
-							if (!tickers.isNull(i))
-							{
-								newsRefs[i].setText(tickers.getJSONObject(i).getString("company"));
-							}
+						for(int i = 0; i < tickers.length(); i++) {
+							Button button = new Button(getContext());
+							button.setText(tickers.getJSONObject(i).getString("company"));
+							references.addView(button);
 						}
 						System.out.println("Set references");
 					} catch (Exception e) {
@@ -192,6 +143,31 @@ public class NewsArticleActivity extends Activity {
 			e.printStackTrace();
 		}
 		return "";
+	}
+    
+    @Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.story_menu, menu);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case R.id.menu_up: {
+			Toast t = Toast.makeText(NewsArticleActivity.this, "Thumbs Up!", Toast.LENGTH_SHORT);
+    		t.show();
+			return true;
+		}
+		case R.id.menu_down: {
+			Toast t = Toast.makeText(NewsArticleActivity.this, "Thumbs Down!", Toast.LENGTH_SHORT);
+    		t.show();
+			return true;
+		}
+		default:
+            return super.onOptionsItemSelected(item);
+		}
 	}
 	
 }
