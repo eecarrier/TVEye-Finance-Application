@@ -30,6 +30,10 @@ public class RegisterFragment extends DialogFragment {
 	public RegisterFragment(LoginCallback callback) {
 		this.callback = callback;
 	}
+	
+	public RegisterFragment(){
+	
+	}
 
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
