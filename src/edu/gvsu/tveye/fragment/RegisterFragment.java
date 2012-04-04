@@ -65,7 +65,6 @@ public class RegisterFragment extends DialogFragment {
 										.show();
 							}
 
-<<<<<<< HEAD
 							public void onComplete(JSONObject object) {
 								Toast.makeText(getActivity(),
 										"You have Successfully Registered!",
@@ -77,18 +76,6 @@ public class RegisterFragment extends DialogFragment {
 								callback.setCredentials();
 								dismiss();
 							}
-=======
-						public void onComplete(JSONObject object) {
-							Toast.makeText(getActivity(),
-									"You have Successfully Registered!",
-									Toast.LENGTH_LONG).show();
-							new TVEyePreferences(getActivity()).setCredentials(
-									email.getText().toString(), password
-											.getText().toString());
-							callback.setCredentials();
-							dismiss();
-						}
->>>>>>> eb6de34334c01ecb9d5d7ec8ade51875cb301f97
 
 							public Context getContext() {
 								// TODO Auto-generated method stub
