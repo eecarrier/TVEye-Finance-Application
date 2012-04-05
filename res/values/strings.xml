@@ -3,5 +3,6 @@
 
     <string name="hello">Hello World, SplashActivity!</string>
     <string name="app_name">TVEye Financial News</string>
-
+    <string name="menu_like">Like</string>
+   	<string name="menu_dislike">Dislike</string>
 </resources>

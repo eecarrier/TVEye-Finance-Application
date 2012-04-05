@@ -4,9 +4,9 @@ import android.app.DialogFragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.Window;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.Button;
 import edu.gvsu.tveye.R;
 import edu.gvsu.tveye.util.TVEyePreferences;
@@ -20,11 +20,13 @@ public class LoginFragment extends DialogFragment {
 		this.callback = callback;
 	}
 
+	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.login, null);
 		Button button = (Button) view.findViewById(R.id.login_button);
+		getDialog().requestWindowFeature(Window.FEATURE_NO_TITLE);
 		button.setOnClickListener(new OnClickListener() {
 
 			public void onClick(View v) {
@@ -41,7 +43,9 @@ public class LoginFragment extends DialogFragment {
 			public void onClick(View v) {
 				FragmentTransaction ft = getFragmentManager().beginTransaction();
 				ft.addToBackStack(null);
+				dismiss();
 				new RegisterFragment(callback).show(ft, "register");
+				
 			}
 
 		});

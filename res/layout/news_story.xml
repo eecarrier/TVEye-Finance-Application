@@ -14,7 +14,6 @@
 	        android:layout_width="fill_parent"
 	        android:weightSum="20"
 		    android:layout_height="fill_parent"
-		    android:background="@drawable/story_background"
 		    android:orientation="horizontal"
 		    android:padding="8dp"
 		    android:layout_margin="7dip"
