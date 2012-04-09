@@ -26,6 +26,7 @@ import android.widget.Toast;
 import edu.gvsu.tveye.adapter.NewsGridAdapter;
 import edu.gvsu.tveye.api.APIWrapper;
 import edu.gvsu.tveye.api.APIWrapper.JSONObjectCallback;
+import edu.gvsu.tveye.api.APIWrapper.NewsTask;
 import edu.gvsu.tveye.fragment.LoginFragment;
 import edu.gvsu.tveye.fragment.LoginFragment.LoginCallback;
 import edu.gvsu.tveye.util.TVEyePreferences;
@@ -161,7 +162,7 @@ public class NewsGridActivity extends FragmentActivity implements LoginCallback 
 			public Context getContext() {
 				return NewsGridActivity.this;
 			}
-		}).execute();
+		}).execute(new NewsTask.Params(20));
 	}
 
 	@Override

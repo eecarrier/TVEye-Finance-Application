@@ -31,6 +31,7 @@ import edu.gvsu.tveye.util.TVEyePreferences;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.util.Base64;
 import android.util.Log;
 
 public class APIWrapper {
@@ -49,7 +50,7 @@ public class APIWrapper {
 
 	private static void authenticate(HttpRequest request, Context context)
 			throws AuthenticationException {
-		/*TVEyePreferences preferences = new TVEyePreferences(context);
+		TVEyePreferences preferences = new TVEyePreferences(context);
 		if (!preferences.hasCredentials())
 			throw new AuthenticationException(CREDENTIALS_MISSING);
 		else {
@@ -57,8 +58,7 @@ public class APIWrapper {
 					.getCredentials();
 			request.addHeader(new BasicSchemeFactory().newInstance(
 					request.getParams()).authenticate(credentials, request));
-		}*/
-		request.addHeader("Authorization", "Basic dG5yNjg0QG1vdG9yb2xhLmNvbToxMjM0NTY=");
+		}
 	}
 
 	private static byte[] consumeStream(InputStream input) throws IOException {
@@ -196,6 +196,14 @@ public class APIWrapper {
 				HttpResponse response = httpClient.execute(request);
 				HttpEntity responseEntity = response.getEntity();
 				int statusCode = response.getStatusLine().getStatusCode();
+				if (statusCode == 302) {
+					for (Header header : response.getHeaders("Location")) {
+						if (header.getValue().contains("login")) {
+							return exceptionToJSON(new AuthenticationException(
+									CREDENTIALS_INVALID));
+						}
+					}
+				}
 				if (statusCode == 403) {
 					return exceptionToJSON(new AuthenticationException(
 							CREDENTIALS_INVALID));
@@ -203,9 +211,13 @@ public class APIWrapper {
 					// Consume the HTTP response and create a JSONObject from
 					// content
 					String content = new String(
-							consumeStream(responseEntity.getContent()));
-					Log.d("NewsTask", "Received content:\n" + content);
-					return new JSONObject(content);
+							consumeStream(responseEntity.getContent())).trim();
+					Log.d("Lejflwekjfklwj", "Char at 6001: " + (int)content.charAt(6001));
+					JSONObject jobj = new JSONObject(content);
+					if (!jobj.optBoolean("login", true))
+						return exceptionToJSON(new AuthenticationException(
+								CREDENTIALS_INVALID));
+					return jobj;
 				} else {
 					return exceptionToJSON(new Exception(
 							"Server responded with status code "
@@ -215,7 +227,8 @@ public class APIWrapper {
 				e.printStackTrace();
 				return exceptionToJSON(e);
 			} catch (JSONException e) {
-				e.printStackTrace();
+			//	e.printStackTrace();
+				System.err.println(e.getMessage());
 				return exceptionToJSON(e);
 			} catch (AuthenticationException e) {
 				e.printStackTrace();
@@ -237,18 +250,18 @@ public class APIWrapper {
 
 		public static class Params {
 
-			public int s;
+			public int n;
 
 			public Params() {
 				this(0);
 			}
 
 			public Params(int s) {
-				this.s = s;
+				this.n = s;
 			}
 
 			public String getParam() {
-				return "s=" + s;
+				return "s=" + n;
 			}
 
 		}
@@ -265,26 +278,26 @@ public class APIWrapper {
 		}
 
 		@Override
-		protected Object doInBackground(JSONObject ... stories) {
+		protected Object doInBackground(JSONObject... stories) {
 			try {
 				// Create an HTTP request using Apache's HTTP client library
-				String path = "/news/details?newsID=" + stories[0].optInt("id", 0);
+				String path = "/news/details?newsID="
+						+ stories[0].optInt("id", 0);
 				HttpGet request = new HttpGet(createURI(path));
 				request.setHeader("Pragma", Config.DEV_KEY);
 				request.setHeader("Accept", "text/html");
 				authenticate(request, callback.getContext());
-				
+
 				// Execute the request using an HttpClient
 				HttpResponse response = httpClient.execute(request);
 				HttpEntity responseEntity = response.getEntity();
 				int statusCode = response.getStatusLine().getStatusCode();
 				Log.d("NewsDetails", request.getURI().toString());
-				for(Header header : request.getAllHeaders()) {
+				for (Header header : request.getAllHeaders()) {
 					Log.d(header.getName(), header.getValue());
 				}
 				if (statusCode == 403) {
-					return new AuthenticationException(
-							CREDENTIALS_INVALID);
+					return new AuthenticationException(CREDENTIALS_INVALID);
 				} else if (statusCode == 200) {
 					// Consume the HTTP response and create a JSONObject from
 					// content
@@ -293,9 +306,8 @@ public class APIWrapper {
 					Log.d("NewsDetailsTask", "Received content:\n" + content);
 					return content;
 				} else {
-					return new Exception(
-							"Server responded with status code "
-									+ response.getStatusLine().getStatusCode());
+					return new Exception("Server responded with status code "
+							+ response.getStatusLine().getStatusCode());
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -313,7 +325,7 @@ public class APIWrapper {
 		protected void onPostExecute(Object result) {
 			if (result instanceof Exception) {
 				callback.onError((Exception) result);
-			} else if(result instanceof String){
+			} else if (result instanceof String) {
 				callback.onComplete((String) result);
 			}
 		}
@@ -330,48 +342,32 @@ public class APIWrapper {
 		}
 
 		@Override
-		protected JSONObject doInBackground(Void ... v) {
-			/*try {
-				// Create an HTTP request using Apache's HTTP client library
-				String path = "/my/analytics";
-				HttpGet request = new HttpGet(createURI(path));
-				request.setHeader("Pragma", Config.DEV_KEY);
-				request.setHeader("Accept", "application/json");
-				authenticate(request, callback.getContext());
-				
-				// Execute the request using an HttpClient
-				HttpResponse response = httpClient.execute(request);
-				HttpEntity responseEntity = response.getEntity();
-				int statusCode = response.getStatusLine().getStatusCode();
-				// TODO: don't forget to do this
-				for(Header header : request.getAllHeaders()) {
-					Log.d(header.getName(), header.getValue());
-				}
-				if (statusCode == 403) {
-					return new AuthenticationException(
-							CREDENTIALS_INVALID);
-				} else if (statusCode == 200) {
-					// Consume the HTTP response and create a JSONObject from
-					// content
-					String content = new String(
-							consumeStream(responseEntity.getContent()));
-					Log.d("NewsDetailsTask", "Received content:\n" + content);
-					return content;
-				} else {
-					return new Exception(
-							"Server responded with status code "
-									+ response.getStatusLine().getStatusCode());
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-				return e;
-			} catch (AuthenticationException e) {
-				e.printStackTrace();
-				return e;
-			} catch (URISyntaxException e) {
-				e.printStackTrace();
-				return e;
-			}*/
+		protected JSONObject doInBackground(Void... v) {
+			/*
+			 * try { // Create an HTTP request using Apache's HTTP client
+			 * library String path = "/my/analytics"; HttpGet request = new
+			 * HttpGet(createURI(path)); request.setHeader("Pragma",
+			 * Config.DEV_KEY); request.setHeader("Accept", "application/json");
+			 * authenticate(request, callback.getContext());
+			 * 
+			 * // Execute the request using an HttpClient HttpResponse response
+			 * = httpClient.execute(request); HttpEntity responseEntity =
+			 * response.getEntity(); int statusCode =
+			 * response.getStatusLine().getStatusCode(); // TODO: don't forget
+			 * to do this for(Header header : request.getAllHeaders()) {
+			 * Log.d(header.getName(), header.getValue()); } if (statusCode ==
+			 * 403) { return new AuthenticationException( CREDENTIALS_INVALID);
+			 * } else if (statusCode == 200) { // Consume the HTTP response and
+			 * create a JSONObject from // content String content = new String(
+			 * consumeStream(responseEntity.getContent()));
+			 * Log.d("NewsDetailsTask", "Received content:\n" + content); return
+			 * content; } else { return new Exception(
+			 * "Server responded with status code " +
+			 * response.getStatusLine().getStatusCode()); } } catch (IOException
+			 * e) { e.printStackTrace(); return e; } catch
+			 * (AuthenticationException e) { e.printStackTrace(); return e; }
+			 * catch (URISyntaxException e) { e.printStackTrace(); return e; }
+			 */
 			return null;
 		}
 
@@ -385,15 +381,15 @@ public class APIWrapper {
 		}
 
 	}
-	
+
 	public static interface StringCallback {
-		
+
 		public Context getContext();
 
 		public void onComplete(String data);
 
 		public void onError(Exception error);
-		
+
 	}
 
 	public static interface JSONObjectCallback {

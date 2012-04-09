@@ -30,12 +30,11 @@ public class NewsGridAdapter extends FragmentStatePagerAdapter {
 	}
 	
 	public int getCount() {
-		try {
-			return (int) Math.ceil(response.getJSONArray("list").length() / 6);
-		} catch(JSONException e) {
-			e.printStackTrace();
-		}
-		return 0;
+		JSONArray list = response.optJSONArray("list");
+		if(list == null)
+			return 0;
+		else
+			return (int) Math.ceil(list.length() / 6);
 	}
 
 	@Override

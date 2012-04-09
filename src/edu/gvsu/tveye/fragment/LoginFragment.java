@@ -31,7 +31,7 @@ public class LoginFragment extends DialogFragment {
 
 			public void onClick(View v) {
 				new TVEyePreferences(getActivity()).setCredentials(
-						"gzavitz@gmail.com", "motorola");
+						"tnr684@motorola.com", "123456");
 				callback.setCredentials();
 			}
 

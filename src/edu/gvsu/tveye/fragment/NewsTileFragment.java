@@ -115,21 +115,18 @@ public class NewsTileFragment extends Fragment {
 			group.addView(tile);
 		}
 	}
-	//04-01 13:13:07.440: D/NewsTileFragment(26385): {"id":1510,"isAcquired":"true","author":"ed carson and scott stoddard","interestLevel":0.15797263194432132,"title":"Surprising Jobs Data Show Jobless Down But So Are Payrolls","tickers":[],"source":"Investors Economy","origin":"www.investors.com","isIndexed":"false","publishDate":"2 years ago","url":"http:\/\/news.investors.com\/Article.aspx?id=520390"}
+	
 	private void populateTile(final View tile, final JSONObject story)
 			throws JSONException {
-		Log.d("NewsTileFragment" , story.toString());
 		final TextView title = (TextView) tile.findViewById(R.id.news_title);
-		TextView content = (TextView) tile.findViewById(R.id.news_content);
 		TextView timestamp = (TextView) tile.findViewById(R.id.news_timestamp);
 		TextView origin = (TextView) tile.findViewById(R.id.news_origin);
 		final ImageView icon = (ImageView) tile.findViewById(R.id.news_icon);
 		final ImageView picture = (ImageView) tile
 				.findViewById(R.id.news_picture);
-		title.setText(Html.fromHtml(story.getString("title")));
-		content.setText(Html.fromHtml(story.optString("content", "Chao Removed me")));
-		timestamp.setText(story.getString("publishDate"));
-		String origin_path = story.getString("origin");
+		title.setText(Html.fromHtml(story.optString("title")));
+		timestamp.setText(story.optString("publishDate"));
+		String origin_path = story.optString("origin");
 		origin.setText(origin_path);
 		if (story.has("imageUrl")) {
 			new ImageDownloadTask(new ImageCallback() {
@@ -148,7 +145,6 @@ public class NewsTileFragment extends Fragment {
 			}).execute(story.getString("imageUrl"));
 		}
 		if (story.has("source")) {
-
 			try {
 				String path = URIUtils.createURI("http", "www.google.com", -1,
 						"/s2/favicons", "domain=" + origin_path, null)
@@ -166,23 +162,6 @@ public class NewsTileFragment extends Fragment {
 				e.printStackTrace();
 			}
 		}
-	}
-
-	private String formatDate(JSONObject story) {
-		try {
-			Date date = org.apache.http.impl.cookie.DateUtils
-					.parseDate(
-							story.getString("publishDate"),
-							new String[] { org.apache.http.impl.cookie.DateUtils.PATTERN_RFC1123 });
-			return DateUtils.getRelativeDateTimeString(getActivity(),
-					date.getTime(), DateUtils.MINUTE_IN_MILLIS,
-					DateUtils.WEEK_IN_MILLIS, 0).toString();
-		} catch (JSONException e) {
-			e.printStackTrace();
-		} catch (DateParseException e) {
-			e.printStackTrace();
-		}
-		return "";
 	}
 
 }
