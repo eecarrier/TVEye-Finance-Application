@@ -10,12 +10,52 @@
     <TextView android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Login to receive personalized news" />
-    <Button android:id="@+id/login_button"
+    
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Test Login" />
-    <Button android:id="@+id/create_account_button"
+        android:layout_marginTop="20dp"
+        android:layout_gravity="center_horizontal"
+        android:orientation="horizontal"
+        android:weightSum="4"
+        android:textStyle="italic" >
+        <EditText
+            android:id="@+id/login_email"
+            android:layout_width="250sp"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="15sp"
+            android:hint="name@example.com"
+            android:inputType="textEmailAddress"
+            android:padding="15sp" />
+        <EditText
+            android:id="@+id/login_password"
+            android:layout_width="250sp"
+            android:layout_height="wrap_content"
+            android:hint="password"
+            android:inputType="textPassword"
+            android:padding="15sp" />
+    </LinearLayout>
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Create a new account >>" />
+        android:layout_marginTop="20dp"
+        android:layout_gravity="center_horizontal"
+        android:orientation="horizontal"
+        >
+
+	    <Button
+	        android:id="@+id/login_button"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="Login" />
+	
+	    <Button
+	        android:id="@+id/create_account_button"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="Register" />
+
+    </LinearLayout>
 </LinearLayout>
