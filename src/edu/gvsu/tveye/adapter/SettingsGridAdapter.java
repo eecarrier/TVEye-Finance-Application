@@ -1,6 +1,8 @@
 package edu.gvsu.tveye.adapter;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -41,6 +43,9 @@ public class SettingsGridAdapter extends BaseAdapter {
 		TextView textView;
 		if(convertView == null) {
 			textView = new TextView(context);
+			textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 28);
+			textView.setPadding(5, 5, 5, 5);
+			textView.setBackgroundColor(Color.parseColor("#F00"));
 		} else {
 			textView = (TextView) convertView;
 		}
