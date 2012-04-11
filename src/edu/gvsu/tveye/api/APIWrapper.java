@@ -212,7 +212,7 @@ public class APIWrapper {
 					// content
 					String content = new String(
 							consumeStream(responseEntity.getContent())).trim();
-					Log.d("Lejflwekjfklwj", "Char at 6001: " + (int)content.charAt(6001));
+					Log.d("NewsTask", content);
 					JSONObject jobj = new JSONObject(content);
 					if (!jobj.optBoolean("login", true))
 						return exceptionToJSON(new AuthenticationException(
