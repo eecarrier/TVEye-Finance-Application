@@ -45,7 +45,6 @@
 	     	android:scaleType="fitXY" /> -->
 	    <edu.gvsu.tveye.view.AutoResizeTextView
 	        android:id="@+id/news_title"
-	        style="@style/TileHeading"
-	        android:background="#F00" />
+	        style="@style/TileHeading" />
     </FrameLayout>
 </LinearLayout>
