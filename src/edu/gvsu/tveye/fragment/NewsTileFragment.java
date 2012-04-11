@@ -31,6 +31,7 @@ import edu.gvsu.tveye.NewsArticleActivity;
 import edu.gvsu.tveye.R;
 import edu.gvsu.tveye.util.ImageDownloadTask;
 import edu.gvsu.tveye.util.ImageDownloadTask.ImageCallback;
+import edu.gvsu.tveye.view.AutoResizeTextView;
 
 /**
  * NewsTileFragment is a set of stories seen on the NewsGridActivity screen.
@@ -118,32 +119,36 @@ public class NewsTileFragment extends Fragment {
 	
 	private void populateTile(final View tile, final JSONObject story)
 			throws JSONException {
-		final TextView title = (TextView) tile.findViewById(R.id.news_title);
+		final AutoResizeTextView title = (AutoResizeTextView) tile.findViewById(R.id.news_title);
 		TextView timestamp = (TextView) tile.findViewById(R.id.news_timestamp);
 		TextView origin = (TextView) tile.findViewById(R.id.news_origin);
 		final ImageView icon = (ImageView) tile.findViewById(R.id.news_icon);
-		final ImageView picture = (ImageView) tile
-				.findViewById(R.id.news_picture);
+		/*final ImageView picture = (ImageView) tile
+				.findViewById(R.id.news_picture);*/
 		title.setText(Html.fromHtml(story.optString("title")));
+		title.setMaxTextSize(200f);
+		title.resizeText();
 		timestamp.setText(story.optString("publishDate"));
 		String origin_path = story.optString("origin");
 		origin.setText(origin_path);
-		if (story.has("imageUrl")) {
+		/*if (story.has("imageUrl")) {
 			new ImageDownloadTask(new ImageCallback() {
 				public void imageFailed(String url) {
 					picture.setVisibility(View.GONE);
 				}
 
 				public void imageDownloaded(String url, Bitmap bitmap) {
-					picture.setLayoutParams(new FrameLayout.LayoutParams(
-							LayoutParams.FILL_PARENT, (int) (tile
-									.getMeasuredHeight() * 0.33f)));
-					picture.setImageBitmap(bitmap);
-					title.setBackgroundColor(getResources().getColor(
-							R.color.tile_heading_shadow));
+					if(getActivity() != null) {
+						picture.setLayoutParams(new FrameLayout.LayoutParams(
+								LayoutParams.FILL_PARENT, (int) (tile
+										.getMeasuredHeight() * 0.33f)));
+						picture.setImageBitmap(bitmap);
+						title.setBackgroundColor(getResources().getColor(
+								R.color.tile_heading_shadow));
+					}
 				}
 			}).execute(story.getString("imageUrl"));
-		}
+		}*/
 		if (story.has("source")) {
 			try {
 				String path = URIUtils.createURI("http", "www.google.com", -1,

@@ -4,19 +4,6 @@
     android:layout_weight="1"         
     android:layout_width="0dip"
     android:background="@drawable/tile_background">
-    <FrameLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content">
-	    <ImageView
-	        android:id="@+id/news_picture"
-	        android:layout_width="fill_parent"
-	        android:layout_height="wrap_content"
-	     	android:scaleType="fitXY" />
-	    <TextView
-	        android:id="@+id/news_title"
-	        android:layout_gravity="bottom"
-	        style="@style/TileHeading" />
-    </FrameLayout>
     <RelativeLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content">
@@ -48,16 +35,17 @@
 	        android:layout_alignParentRight="true"
 	        android:gravity="center_vertical|right" />
     </RelativeLayout>
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dip"
-        android:layout_marginTop="3dip"
-        android:layout_marginBottom="3dip"
-        android:background="@color/tile_separator" />
-    <TextView
-        android:id="@+id/news_content"
+    <FrameLayout
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:fadingEdge="vertical"
-        android:textSize="16dip" />
+        android:layout_height="fill_parent">
+	    <!-- <ImageView
+	        android:id="@+id/news_picture"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	     	android:scaleType="fitXY" /> -->
+	    <edu.gvsu.tveye.view.AutoResizeTextView
+	        android:id="@+id/news_title"
+	        style="@style/TileHeading"
+	        android:background="#F00" />
+    </FrameLayout>
 </LinearLayout>
