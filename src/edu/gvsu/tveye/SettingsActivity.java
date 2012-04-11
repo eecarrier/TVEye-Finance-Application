@@ -12,8 +12,6 @@ import edu.gvsu.tveye.fragment.LoginFragment.LoginCallback;
 
 public class SettingsActivity extends Activity {
 	
-	private LoginCallback callback;
-	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -39,8 +37,6 @@ public class SettingsActivity extends Activity {
 
 		FragmentTransaction ft = getFragmentManager().beginTransaction();
 		ft.addToBackStack(null);
-		/*new LikeFragment();
-		new LikeFragment();*/
 		
 		if (savedInstanceState != null) {
 			bar.setSelectedNavigationItem(savedInstanceState.getInt("tab", 0));
@@ -52,14 +48,6 @@ public class SettingsActivity extends Activity {
 		super.onSaveInstanceState(outState);
 		outState.putInt("tab", getActionBar().getSelectedNavigationIndex());
 	}
-	
-
-	// @Override
-	// public boolean onCreateOptionsMenu(Menu menu) {
-	// MenuInflater inflater = getMenuInflater();
-	// inflater.inflate(R.menu.settings, menu);
-	// return true;
-	// }
 
 	public static class TabListener<T extends Fragment> implements
 			ActionBar.TabListener {
