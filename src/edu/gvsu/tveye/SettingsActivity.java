@@ -8,8 +8,12 @@ import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.widget.Toast;
 import edu.gvsu.tveye.fragment.*;
+import edu.gvsu.tveye.fragment.LoginFragment.LoginCallback;
 
 public class SettingsActivity extends Activity {
+	
+	private LoginCallback callback;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -21,18 +25,22 @@ public class SettingsActivity extends Activity {
 
 		bar.addTab(bar
 				.newTab()
-				.setText("Simple")
+				.setText("Like")
 				.setTabListener(
 						new TabListener<LikeFragment>(this,
-								"simple", LikeFragment.class)));
+								"Like", LikeFragment.class)));
 		bar.addTab(bar
 				.newTab()
-				.setText("Contacts")
+				.setText("Dislike")
 				.setTabListener(
 						new TabListener<LikeFragment>(
-								this, "contacts",
+								this, "Dislike",
 								LikeFragment.class)));
 
+		FragmentTransaction ft = getFragmentManager().beginTransaction();
+		ft.addToBackStack(null);
+		new LikeFragment();
+		
 		if (savedInstanceState != null) {
 			bar.setSelectedNavigationItem(savedInstanceState.getInt("tab", 0));
 		}
