@@ -9,7 +9,6 @@ import org.json.JSONObject;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.util.Log;
 import edu.gvsu.tveye.fragment.NewsTileFragment;
@@ -113,6 +112,7 @@ public class NewsGridAdapter extends FragmentStatePagerAdapter {
 	 */
 	public class GridPage extends ArrayList<JSONObject> {	
 		
+		private static final long serialVersionUID = 1027402088740669739L;
 		double currentLevel = 0, goalLevel;
 		int goalCount, fails = 0;
 		

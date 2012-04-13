@@ -21,21 +21,16 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URIUtils;
-import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.auth.BasicSchemeFactory;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.protocol.HTTP;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import edu.gvsu.tveye.util.TVEyePreferences;
-
 import android.content.Context;
 import android.os.AsyncTask;
-import android.util.Base64;
 import android.util.Log;
+import edu.gvsu.tveye.util.TVEyePreferences;
 
 public class APIWrapper {
 
@@ -215,7 +210,6 @@ public class APIWrapper {
 					// content
 					String content = new String(
 							consumeStream(responseEntity.getContent())).trim();
-					Log.d("NewsTask", content);
 					JSONObject jobj = new JSONObject(content);
 					if (!jobj.optBoolean("login", true))
 						return exceptionToJSON(new AuthenticationException(
