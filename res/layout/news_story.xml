@@ -34,19 +34,17 @@
 						android:id="@+id/news_detail_picture"
 						android:layout_width="fill_parent"
 						android:layout_height="wrap_content"
-						android:scaleType="fitXY" />
+						android:scaleType="fitXY" />-->
 					<TextView
 						android:id="@+id/news_detail_title"
 						android:layout_gravity="bottom"
-						style="@style/TileHeading"
-						android:text="This is a Fake Title" />
-				    <TextView
+						style="@style/TileHeading"/>
+				   <!--<TextView
 				        android:id="@+id/news_detail_timestamp"
 				        android:layout_width="match_parent"
 				        android:layout_height="wrap_content"
 				        android:textColor="@color/tile_timestamp"
-				        android:textStyle="italic"
-				        android:text = "This is a fake timestamp"/>-->
+				        android:textStyle="italic"/>-->
 				    <View
 				        android:layout_width="match_parent"
 				        android:layout_height="10dp"/>
