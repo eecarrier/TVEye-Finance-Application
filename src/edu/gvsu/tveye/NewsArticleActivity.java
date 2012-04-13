@@ -1,5 +1,9 @@
 package edu.gvsu.tveye;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Date;
 
 import org.apache.http.impl.cookie.DateParseException;
@@ -9,8 +13,11 @@ import org.json.JSONObject;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.Html;
+import android.text.Html.ImageGetter;
+import android.text.Spanned;
 import android.text.format.DateUtils;
 import android.text.method.LinkMovementMethod;
 import android.view.Menu;
@@ -75,13 +82,39 @@ public class NewsArticleActivity extends Activity {
 
 				public void onComplete(final String data) {
 					//picture = (ImageView) findViewById(R.id.news_detail_picture);
-					//title = (TextView) findViewById(R.id.news_detail_title);
+					title = (TextView) findViewById(R.id.news_detail_title);
 					//timestamp = (TextView) findViewById(R.id.news_detail_timestamp);
 					content = (TextView) findViewById(R.id.news_detail_content);
 					
-					//title.setText(Html.fromHtml(story.getString("title")));
-					content.setText(Html.fromHtml(data.substring(data.indexOf("<div class=\'author\'>"))));
+					Spanned fullContent = Html.fromHtml(data.substring(data.indexOf("<div class=\'author\'>")), new ImageGetter() {
+						public InputStream imageFetch(String source) throws MalformedURLException,IOException {
+							URL url = new URL(source);
+							Object obj = url.getContent();
+							InputStream content = (InputStream)obj; 
+						    return content;
+						}
+
+						public Drawable getDrawable(String source){
+							Drawable d = null;
+							try {
+									InputStream src = imageFetch(source);
+									d = Drawable.createFromStream(src, "src");
+									if(d != null){
+										d.setBounds(0, 0, d.getIntrinsicWidth(), d.getIntrinsicHeight());
+									}
+							}
+							catch (Exception e){
+								e.printStackTrace();
+							}
+							return d;
+						}
+					}, null);
+					
+					title.setText(Html.fromHtml(data.substring(data.indexOf("<h1>"), data.indexOf("</h1>"))));
+					title.setMovementMethod(LinkMovementMethod.getInstance());
+					content.setText(fullContent);
 					content.setMovementMethod(LinkMovementMethod.getInstance());
+					
 					try {
 						LinearLayout references = (LinearLayout) findViewById(R.id.references);
 						tickers = story.getJSONArray("tickers");
