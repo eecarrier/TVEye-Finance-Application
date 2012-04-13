@@ -104,50 +104,44 @@ public class NewsTileFragment extends Fragment {
 		fillRow(rows[0], stories.subList(0, mid), averageInterest);
 		fillRow(rows[1], stories.subList(mid, stories.size()), averageInterest);		
 	}
-	
+
+	// Calculate the value of each tile's weight by first
+	// (1): 3/5 * averageWeight + 2/5 * (interest - averageInterest)
+	// Add this value to a E(1), then on the next iteration do this
+	// weight = (1) / E(1)
 	private void fillRow(LinearLayout row, List<JSONObject> stories, float averageInterest) throws JSONException {
 		LayoutInflater inflater = getActivity().getLayoutInflater();
-		HashMap<View, Float> interestMap = new HashMap<View, Float>();
+		ArrayList<View> interestViews = new ArrayList<View>();
 		float rowSum = row.getWeightSum();
-		float interestSum = 0;
+		float averageWeight = rowSum / stories.size();
+		// The interestMultiplier says how much a tiles size can be changed simply by interest variance
+		// The higher the multiplier the larger difference in tile sizes
+		float interestMultiplier = 0.2f;
+		float sumWeights = 0;
 		for(int i = 0; i < stories.size(); i++) {
 			JSONObject story = stories.get(i);
+			final String metadata = story.toString();
 			View tile = inflater.inflate(R.layout.news_tile, null);
-			tile.setTag(story.toString());
 			tile.setOnClickListener(new OnClickListener() {
 				public void onClick(View v) {
 					Intent intent = new Intent(getActivity(),
 							NewsArticleActivity.class);
-					intent.putExtra("metadata", (String) v.getTag());
+					intent.putExtra("metadata", metadata);
 					getActivity().startActivity(intent);
 				}
 			});
 			float interest = (float) story.optDouble("interestLevel", rowSum / stories.size());
 			float interestVariance = interest - averageInterest;
-			interestSum += Math.abs(interestVariance);
-			interestMap.put(tile, interestVariance);
+			float weight = (1 - interestMultiplier) * averageWeight + interestMultiplier * interestVariance;
+			sumWeights += weight;
+			tile.setTag(weight);
+			interestViews.add(tile);
 			populateTile(tile, story);
 			row.addView(tile);
 		}
-		// Calculate the value of each tile's weight by first
-		// (1): 3/5 * averageWeight + 2/5 * (interest - averageInterest)
-		// Add this value to a E(1), then on the next iteration do this
-		// weight = (1) / E(1)
-		float averageWeight = rowSum / stories.size();
-		float sumRoundOne = 0;
-		// The interestMultiplier says how much a tiles size can be changed simply by interest variance
-		// The higher the multiplier the larger difference in tile sizes
-		float interestMultiplier = 0.2f;
-		for(View tile : interestMap.keySet()) {
-			float interestVariance = interestMap.get(tile);
-			float weight = (1 - interestMultiplier) * averageWeight + interestMultiplier * interestVariance;
-			tile.setTag(weight);
-			sumRoundOne += weight;
-		}
-		for(View tile : interestMap.keySet()) {
-			float weight = ((Float) tile.getTag()).floatValue() / sumRoundOne;
-			tile.setLayoutParams(new LinearLayout.LayoutParams(0, -1, weight));
-			Log.d("Page" + position, "weight: " + weight + "\nsumRoundOne%: " + sumRoundOne);
+		for(View tile : interestViews) {
+			float normalized = ((Float) tile.getTag()).floatValue() / sumWeights;
+			tile.setLayoutParams(new LinearLayout.LayoutParams(0, -1, normalized));
 		}
 	}
 
