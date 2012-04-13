@@ -93,13 +93,6 @@ public class NewsTileFragment extends Fragment {
 				(LinearLayout) getView().findViewById(R.id.news_tile_row_1),
 				(LinearLayout) getView().findViewById(R.id.news_tile_row_2) 
 		};
-		/*
-		 * 1: Sort the stories by interestLevel
-		 * 2: If there is an odd amount, put fewer on top
-		 * 3: Iterate through each story
-		 * 	4: Add to the correct row
-		 *  5: Populate the tile with it's story
-		 */
 		ArrayList<JSONObject> stories = new ArrayList<JSONObject>();
 		int n = set.length();
 		for(int i = 0; i < n; i++) {
@@ -120,8 +113,8 @@ public class NewsTileFragment extends Fragment {
 			// number of tiles on this row:
 			//  if there is an odd # of tiles there will be one more on the second row
 			//  if there is an even number of rows it's simply n / 2
-			int tileCount = (n % 2 == 1 ? (i > n / 2 ? n / 2 + 1 : n / 2) : n / 2);
-			// evenly distributed tiles for now
+			int tileCount = (n % 2 == 1 ? (i >= n / 2 ? n / 2 + 1 : n / 2) : n / 2);
+			// TODO: Biased weighting for tiles... evenly distributed tiles for now
 			float tileWeight = rowSum / tileCount;
 			
 			JSONObject story = stories.get(i);
@@ -140,14 +133,13 @@ public class NewsTileFragment extends Fragment {
 			populateTile(tile, story);
 			row.addView(tile);
 		}
+		
 	}
 
 	private void populateTile(final View tile, final JSONObject story)
 			throws JSONException {
-		AutoResizeTextView title = (AutoResizeTextView) tile.findViewById(R.id.news_title);
+		TextView title = (TextView) tile.findViewById(R.id.news_title);
 		title.setText(Html.fromHtml(story.optString("title")));
-		title.setMaxTextSize(200f);
-		title.resizeText();
 		
 		TextView timestamp = (TextView) tile.findViewById(R.id.news_timestamp);
 		timestamp.setText(story.optString("publishDate"));

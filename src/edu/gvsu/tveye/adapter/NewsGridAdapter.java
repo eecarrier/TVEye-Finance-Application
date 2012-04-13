@@ -82,7 +82,6 @@ public class NewsGridAdapter extends FragmentStatePagerAdapter {
 				pages.add(currentPage);
 				currentPage = new GridPage(mean, getGoalLevelModifier(stories.size(), count));
 			}
-			Log.d("NewsGridAdapter", "Remaining: " + stories.size());
 		}
 		Log.d("NewsGridAdapter", "Created " + pages.size() + " pages");
 	}
