@@ -21,9 +21,12 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URIUtils;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.auth.BasicSchemeFactory;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.protocol.HTTP;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -381,6 +384,59 @@ public class APIWrapper {
 		}
 
 	}
+	
+public static class PostAnalyticsTask extends 
+			AsyncTask<String, Void, Object> {
+	
+	private StringCallback callback;
+	
+	public PostAnalyticsTask(StringCallback callback) {
+		this.callback = callback;
+	}
+
+	@Override
+	protected Object doInBackground(String... params) {
+		 try { 		 
+			 Double PREFERENCEDEGREE = .5;
+			 // Create an HTTP request using Apache's HTTP client library
+			 String path = "/my/analytics";
+			 HttpPost post = new HttpPost(createURI(path)); 
+			 post.setHeader("Pragma", Config.DEV_KEY); 
+			 authenticate(post, callback.getContext());
+			 
+			 List <NameValuePair> nvps = new ArrayList <NameValuePair>();
+			 nvps.add(new BasicNameValuePair("action", params[0]));
+			 nvps.add(new BasicNameValuePair("target", params[1]));
+			 nvps.add(new BasicNameValuePair("targetId", params[2]));
+			 nvps.add(new BasicNameValuePair("degree", PREFERENCEDEGREE.toString()));
+			 post.setEntity(new UrlEncodedFormEntity(nvps)); 
+			  
+			 // Execute the request using an HttpClient 
+			 HttpResponse response = httpClient.execute(post); 
+			 int statusCode = response.getStatusLine().getStatusCode(); 
+			 if (statusCode == 403) { 
+				  return new AuthenticationException(CREDENTIALS_INVALID);
+			 } else if (statusCode == 200) {  
+				 return "OK";
+			  } else { 
+				  return new Exception("Server responded with status code " + response.getStatusLine().getStatusCode()); 
+			  } 
+			} catch (Exception e) {
+				e.printStackTrace();
+				return e;
+			}
+	}
+
+	@Override
+	protected void onPostExecute(Object result) {
+		if (result instanceof Exception) {
+			callback.onError((Exception) result);
+		} else if (result instanceof String) {
+			callback.onComplete((String) result);
+		}
+	}
+}
+
 
 	public static interface StringCallback {
 

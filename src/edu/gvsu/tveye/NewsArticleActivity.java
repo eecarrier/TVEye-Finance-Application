@@ -6,6 +6,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Date;
 
+import org.apache.http.auth.AuthenticationException;
 import org.apache.http.impl.cookie.DateParseException;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -35,9 +36,6 @@ import edu.gvsu.tveye.api.APIWrapper;
 
 public class NewsArticleActivity extends Activity {
 	
-	//TODO
-	//how to use progressBar
-	//how to get actual content
 	private JSONObject story;
 	private JSONArray tickers;
 	private ImageButton thumbsUp;
@@ -47,6 +45,7 @@ public class NewsArticleActivity extends Activity {
 	private TextView timestamp;
 	private TextView content;
 	private Toast toast;
+	private Integer id;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -55,35 +54,32 @@ public class NewsArticleActivity extends Activity {
         
         try {
 			story = new JSONObject(getIntent().getExtras().getString("metadata"));
+			id = (Integer) story.get("id");
 			setTitle(story.getString("title"));
 			
 	        new APIWrapper.NewsDetailsTask(new APIWrapper.StringCallback() {
 				public void onError(Exception e) {
-					
 					Context context = getApplicationContext();
+					String type = e.getClass().getName();
+					String message = e.getMessage();
 					int duration = Toast.LENGTH_LONG;
-					toast = Toast.makeText(context,  e.getMessage(), duration);
-					toast.show();
-					
-					/*if (type.equals(AuthenticationException.class.getName())) {
+					toast = Toast.makeText(context, message, duration);
+
+					if (type.equals(AuthenticationException.class.getName())) {
 						if (message.equals(APIWrapper.CREDENTIALS_INVALID)) {
 							toast.setText("Login credentials are invalid... Try again.");
-							//dropdown.showMessage("Login credentials are invalid... Try again.", dropdown.errorBackground, 3000);
 						} else if (message.equals(APIWrapper.CREDENTIALS_MISSING)) {
 							toast.setText("Credentials are missing");
-							//dropdown.showMessage("Credentials are missing", dropdown.errorBackground, 3000);
 						}
 					} else {
 						toast.setText("Unable to retrieve the latest news");
-						//dropdown.showMessage("Unable to retrieve the latest news", dropdown.errorBackground, 3000);
 					}
-					toast.show();*/
+					toast.show();
 				}
 
 				public void onComplete(final String data) {
 					//picture = (ImageView) findViewById(R.id.news_detail_picture);
 					title = (TextView) findViewById(R.id.news_detail_title);
-					//timestamp = (TextView) findViewById(R.id.news_detail_timestamp);
 					content = (TextView) findViewById(R.id.news_detail_content);
 					
 					Spanned fullContent = Html.fromHtml(data.substring(data.indexOf("<div class=\'author\'>")), new ImageGetter() {
@@ -110,6 +106,7 @@ public class NewsArticleActivity extends Activity {
 						}
 					}, null);
 					
+					//This is not the ideal way to find the title, but there is no element with id=title
 					title.setText(Html.fromHtml(data.substring(data.indexOf("<h1>"), data.indexOf("</h1>"))));
 					title.setMovementMethod(LinkMovementMethod.getInstance());
 					content.setText(fullContent);
@@ -118,35 +115,25 @@ public class NewsArticleActivity extends Activity {
 					try {
 						LinearLayout references = (LinearLayout) findViewById(R.id.references);
 						tickers = story.getJSONArray("tickers");
-						for(int i = 0; i < tickers.length(); i++) {
+						for (int i = 0; i < 8; i++) {
+						//for(int i = 0; i < tickers.length(); i++) {
 							Button button = new Button(getContext());
-							button.setText(tickers.getJSONObject(i).getString("company"));
+							//button.setText(tickers.getJSONObject(i).getString("company"));
+							button.setText("Sample");
+							button.setPadding(40,20,40,20);
+							/*button.setOnClickListener(new OnClickListener() {
+								public void onClick(View v) {
+									//TODO how to get different actions for each button
+									String refId = tickers.getJSONObject(i).getString("id");
+									new APIWrapper.PostAnalyticsTask(analytics).execute("like","ticker",refId);
+								}
+							});*/
 							references.addView(button);
 						}
 						System.out.println("Set references");
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
-					//timestamp.setText(formatDate(story));
-					/*if (story.has("imageUrl")) {
-						try {
-							new ImageDownloadTask(new ImageCallback() {
-								public void imageFailed(String url) {
-									picture.setVisibility(View.GONE);
-								}
-
-								public void imageDownloaded(String url, Bitmap bitmap) {
-									/*picture.setLayoutParams(new FrameLayout.LayoutParams(
-											LayoutParams.FILL_PARENT, (int) (tile
-													.getMeasuredHeight() * 0.33f)));
-									picture.setImageBitmap(bitmap);
-									title.setBackgroundColor(Color.argb(0xAA, 0xFF, 0xFF, 0xFF));
-								}
-							}).execute(story.getString("imageUrl"));
-						} catch (JSONException e) {
-							e.printStackTrace();
-						}
-					}*/
 				}
 
 				public Context getContext() {
@@ -156,27 +143,44 @@ public class NewsArticleActivity extends Activity {
 	        
 		} catch (JSONException e) {
 			e.printStackTrace();
-			// TODO: Let the user know that something went wrong loading the story
+			toast = Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG);
+			toast.show();
 			finish();
 		}
     }
     
-    private String formatDate(JSONObject story) {
-		try {
-			Date date = org.apache.http.impl.cookie.DateUtils
-					.parseDate(
-							story.getString("publishDate"),
-							new String[] { org.apache.http.impl.cookie.DateUtils.PATTERN_RFC1123 });
-			return DateUtils.getRelativeDateTimeString(NewsArticleActivity.this,
-					date.getTime(), DateUtils.MINUTE_IN_MILLIS,
-					DateUtils.WEEK_IN_MILLIS, 0).toString();
-		} catch (JSONException e) {
-			e.printStackTrace();
-		} catch (DateParseException e) {
-			e.printStackTrace();
+    //TODO Will using only one object cause problems?
+    private APIWrapper.StringCallback analytics = new APIWrapper.StringCallback() {
+    	public void onError(Exception e) {
+			Context context = getApplicationContext();
+			String type = e.getClass().getName();
+			String message = e.getMessage();
+			int duration = Toast.LENGTH_LONG;
+			toast = Toast.makeText(context, message, duration);
+
+			if (type.equals(AuthenticationException.class.getName())) {
+				if (message.equals(APIWrapper.CREDENTIALS_INVALID)) {
+					toast.setText("Login credentials are invalid... Try again.");
+				} else if (message.equals(APIWrapper.CREDENTIALS_MISSING)) {
+					toast.setText("Credentials are missing");
+				}
+			} else {
+				toast.setText("Unable to update preferences");
+			}
+			
+			toast.show();
 		}
-		return "";
-	}
+
+		public void onComplete(String data) {
+			String message = "Preferences successfully updated!";
+			toast = Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT);
+			toast.show();
+		}
+		
+		public Context getContext() {
+			return NewsArticleActivity.this;
+		}
+	};
     
     @Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -189,18 +193,15 @@ public class NewsArticleActivity extends Activity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.menu_up: {
-			Toast t = Toast.makeText(NewsArticleActivity.this, "Thumbs Up!", Toast.LENGTH_SHORT);
-    		t.show();
+			new APIWrapper.PostAnalyticsTask(analytics).execute("like","news",id.toString());
 			return true;
 		}
 		case R.id.menu_down: {
-			Toast t = Toast.makeText(NewsArticleActivity.this, "Thumbs Down!", Toast.LENGTH_SHORT);
-    		t.show();
+			new APIWrapper.PostAnalyticsTask(analytics).execute("dislike","news",id.toString());
 			return true;
 		}
 		default:
             return super.onOptionsItemSelected(item);
 		}
 	}
-	
 }
