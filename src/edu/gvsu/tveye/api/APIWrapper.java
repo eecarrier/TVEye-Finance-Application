@@ -27,12 +27,10 @@ import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import edu.gvsu.tveye.util.TVEyePreferences;
-
 import android.content.Context;
 import android.os.AsyncTask;
-import android.util.Base64;
 import android.util.Log;
+import edu.gvsu.tveye.util.TVEyePreferences;
 
 public class APIWrapper {
 
@@ -212,7 +210,6 @@ public class APIWrapper {
 					// content
 					String content = new String(
 							consumeStream(responseEntity.getContent())).trim();
-					Log.d("NewsTask", content);
 					JSONObject jobj = new JSONObject(content);
 					if (!jobj.optBoolean("login", true))
 						return exceptionToJSON(new AuthenticationException(
@@ -381,6 +378,59 @@ public class APIWrapper {
 		}
 
 	}
+	
+public static class PostAnalyticsTask extends 
+			AsyncTask<String, Void, Object> {
+	
+	private StringCallback callback;
+	
+	public PostAnalyticsTask(StringCallback callback) {
+		this.callback = callback;
+	}
+
+	@Override
+	protected Object doInBackground(String... params) {
+		 try { 		 
+			 Double PREFERENCEDEGREE = .5;
+			 // Create an HTTP request using Apache's HTTP client library
+			 String path = "/my/analytics";
+			 HttpPost post = new HttpPost(createURI(path)); 
+			 post.setHeader("Pragma", Config.DEV_KEY); 
+			 authenticate(post, callback.getContext());
+			 
+			 List <NameValuePair> nvps = new ArrayList <NameValuePair>();
+			 nvps.add(new BasicNameValuePair("action", params[0]));
+			 nvps.add(new BasicNameValuePair("target", params[1]));
+			 nvps.add(new BasicNameValuePair("targetId", params[2]));
+			 nvps.add(new BasicNameValuePair("degree", PREFERENCEDEGREE.toString()));
+			 post.setEntity(new UrlEncodedFormEntity(nvps)); 
+			  
+			 // Execute the request using an HttpClient 
+			 HttpResponse response = httpClient.execute(post); 
+			 int statusCode = response.getStatusLine().getStatusCode(); 
+			 if (statusCode == 403) { 
+				  return new AuthenticationException(CREDENTIALS_INVALID);
+			 } else if (statusCode == 200) {  
+				 return "OK";
+			  } else { 
+				  return new Exception("Server responded with status code " + response.getStatusLine().getStatusCode()); 
+			  } 
+			} catch (Exception e) {
+				e.printStackTrace();
+				return e;
+			}
+	}
+
+	@Override
+	protected void onPostExecute(Object result) {
+		if (result instanceof Exception) {
+			callback.onError((Exception) result);
+		} else if (result instanceof String) {
+			callback.onComplete((String) result);
+		}
+	}
+}
+
 
 	public static interface StringCallback {
 

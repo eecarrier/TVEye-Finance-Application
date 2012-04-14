@@ -45,7 +45,6 @@ public class SettingsGridAdapter extends BaseAdapter {
 			textView = new TextView(context);
 			textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 28);
 			textView.setPadding(5, 5, 5, 5);
-			textView.setBackgroundColor(Color.RED);
 		} else {
 			textView = (TextView) convertView;
 		}

@@ -222,7 +222,8 @@ public class AutoResizeTextView extends TextView {
             return;
         }
         
-        height = (int) (height * 0.75f);
+        height = (int) (height * 0.8f);
+        width = (int) (width * 0.7f);
 
         // Get the text view's paint object
         TextPaint textPaint = getPaint();

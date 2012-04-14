@@ -1,29 +1,27 @@
 package edu.gvsu.tveye.fragment;
 
 import java.net.URISyntaxException;
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
 
 import org.apache.http.client.utils.URIUtils;
-import org.apache.http.impl.cookie.DateParseException;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Html;
-import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
-import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -31,7 +29,6 @@ import edu.gvsu.tveye.NewsArticleActivity;
 import edu.gvsu.tveye.R;
 import edu.gvsu.tveye.util.ImageDownloadTask;
 import edu.gvsu.tveye.util.ImageDownloadTask.ImageCallback;
-import edu.gvsu.tveye.view.AutoResizeTextView;
 
 /**
  * NewsTileFragment is a set of stories seen on the NewsGridActivity screen.
@@ -82,78 +79,89 @@ public class NewsTileFragment extends Fragment {
 			e.printStackTrace();
 		}
 	}
-
+	
 	public void createTiles() throws JSONException {
-		final LinearLayout[] tile_group = new LinearLayout[] {
+		LinearLayout[] rows = new LinearLayout[] {
 				(LinearLayout) getView().findViewById(R.id.news_tile_row_1),
-				(LinearLayout) getView().findViewById(R.id.news_tile_row_2) };
-		tile_group[0].setTag(new Float(0.5));
-		tile_group[1].setTag(new Float(0.5));
+				(LinearLayout) getView().findViewById(R.id.news_tile_row_2) 
+		};
+		ArrayList<JSONObject> stories = new ArrayList<JSONObject>();
+		float averageInterest = 0;
+		for(int i = 0; i < set.length(); i++) {
+			JSONObject story = set.getJSONObject(i);
+			averageInterest += story.optDouble("interestLevel", 0);
+			stories.add(story);
+		}
+		averageInterest /= set.length();
+		Collections.sort(stories, new Comparator<JSONObject>() {
+			public int compare(JSONObject lhs, JSONObject rhs) {
+				double left = lhs.optDouble("interestLevel", 0);
+				double right = rhs.optDouble("interestLevel", 0);
+				return (left < right ? -1 : 1);
+			}
+		});
+		int mid = stories.size() / 2;
+		fillRow(rows[0], stories.subList(0, mid), averageInterest);
+		fillRow(rows[1], stories.subList(mid, stories.size()), averageInterest);		
+	}
 
+	// Calculate the value of each tile's weight by first
+	// (1): 3/5 * averageWeight + 2/5 * (interest - averageInterest)
+	// Add this value to a E(1), then on the next iteration do this
+	// weight = (1) / E(1)
+	private void fillRow(LinearLayout row, List<JSONObject> stories, float averageInterest) throws JSONException {
 		LayoutInflater inflater = getActivity().getLayoutInflater();
-		for (int i = 0; i < set.length(); i++) {
-			float weightSum = tile_group[i / 3].getWeightSum();
-			float tileWeight = i < 3 ? (i == 0 ? weightSum / 2 : weightSum / 4)
-					: weightSum / 3;
-
-			final JSONObject story = set.getJSONObject(i);
-			final View tile = inflater.inflate(R.layout.news_tile, null);
-			tile.setTag(new Float(tileWeight));
-			final LinearLayout group = tile_group[i / 3];
-			tile.setLayoutParams(new LinearLayout.LayoutParams(0,
-					LayoutParams.FILL_PARENT, tileWeight));
-
+		ArrayList<View> interestViews = new ArrayList<View>();
+		float rowSum = row.getWeightSum();
+		float averageWeight = rowSum / stories.size();
+		// The interestMultiplier says how much a tiles size can be changed simply by interest variance
+		// The higher the multiplier the larger difference in tile sizes
+		float interestMultiplier = 0.2f;
+		float sumWeights = 0;
+		for(int i = 0; i < stories.size(); i++) {
+			JSONObject story = stories.get(i);
+			final String metadata = story.toString();
+			View tile = inflater.inflate(R.layout.news_tile, null);
 			tile.setOnClickListener(new OnClickListener() {
 				public void onClick(View v) {
 					Intent intent = new Intent(getActivity(),
 							NewsArticleActivity.class);
-					intent.putExtra("metadata", story.toString());
+					intent.putExtra("metadata", metadata);
 					getActivity().startActivity(intent);
 				}
 			});
-
+			float interest = (float) story.optDouble("interestLevel", rowSum / stories.size());
+			float interestVariance = interest - averageInterest;
+			float weight = (1 - interestMultiplier) * averageWeight + interestMultiplier * interestVariance;
+			sumWeights += weight;
+			tile.setTag(weight);
+			interestViews.add(tile);
 			populateTile(tile, story);
-			group.addView(tile);
+			row.addView(tile);
+		}
+		for(View tile : interestViews) {
+			float normalized = ((Float) tile.getTag()).floatValue() / sumWeights;
+			tile.setLayoutParams(new LinearLayout.LayoutParams(0, -1, normalized));
 		}
 	}
-	
-	private void populateTile(final View tile, final JSONObject story)
+
+	private void populateTile(View tile, JSONObject story)
 			throws JSONException {
-		final AutoResizeTextView title = (AutoResizeTextView) tile.findViewById(R.id.news_title);
-		TextView timestamp = (TextView) tile.findViewById(R.id.news_timestamp);
-		TextView origin = (TextView) tile.findViewById(R.id.news_origin);
-		final ImageView icon = (ImageView) tile.findViewById(R.id.news_icon);
-		/*final ImageView picture = (ImageView) tile
-				.findViewById(R.id.news_picture);*/
+		TextView title = (TextView) tile.findViewById(R.id.news_title);
 		title.setText(Html.fromHtml(story.optString("title")));
-		title.setMaxTextSize(200f);
-		title.resizeText();
+		
+		TextView timestamp = (TextView) tile.findViewById(R.id.news_timestamp);
 		timestamp.setText(story.optString("publishDate"));
+		
+		TextView origin = (TextView) tile.findViewById(R.id.news_origin);
 		String origin_path = story.optString("origin");
 		origin.setText(origin_path);
-		/*if (story.has("imageUrl")) {
-			new ImageDownloadTask(new ImageCallback() {
-				public void imageFailed(String url) {
-					picture.setVisibility(View.GONE);
-				}
-
-				public void imageDownloaded(String url, Bitmap bitmap) {
-					if(getActivity() != null) {
-						picture.setLayoutParams(new FrameLayout.LayoutParams(
-								LayoutParams.FILL_PARENT, (int) (tile
-										.getMeasuredHeight() * 0.33f)));
-						picture.setImageBitmap(bitmap);
-						title.setBackgroundColor(getResources().getColor(
-								R.color.tile_heading_shadow));
-					}
-				}
-			}).execute(story.getString("imageUrl"));
-		}*/
 		if (story.has("source")) {
 			try {
 				String path = URIUtils.createURI("http", "www.google.com", -1,
 						"/s2/favicons", "domain=" + origin_path, null)
 						.toString();
+				final ImageView icon = (ImageView) tile.findViewById(R.id.news_icon);
 				new ImageDownloadTask(new ImageCallback() {
 
 					public void imageFailed(String url) {

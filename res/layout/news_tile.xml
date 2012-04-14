@@ -43,7 +43,7 @@
 	        android:layout_width="fill_parent"
 	        android:layout_height="wrap_content"
 	     	android:scaleType="fitXY" /> -->
-	    <edu.gvsu.tveye.view.AutoResizeTextView
+	    <TextView
 	        android:id="@+id/news_title"
 	        style="@style/TileHeading" />
     </FrameLayout>
