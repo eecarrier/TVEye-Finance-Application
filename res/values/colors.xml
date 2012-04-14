@@ -14,7 +14,12 @@
     <color name="tile_heading">#FF0F565D</color>
     <color name="tile_heading_shadow">#99FFFFFF</color>
     <color name="tile_timestamp">#FF666666</color>
-    <color name="tile_separator">#FFA2A2A2</color>
+    
+    <color name="tile_background_high_interest">#FF0F565D</color>
+    <color name="tile_stroke_high_interest">#FF0F363D</color>
+    <color name="tile_heading_high_interest">#CCFFFFFF</color>
+    <color name="tile_heading_shadow_high_interest">#33000000</color>
+    <color name="tile_timestamp_high_interest">#FFDDDDDD</color>
     
     <color name="more_background">#FF0F565D</color>
     <color name="more_text">#FFFFFAD5</color>

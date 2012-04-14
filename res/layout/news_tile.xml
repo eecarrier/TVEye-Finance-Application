@@ -24,25 +24,19 @@
 	        android:textStyle="italic"
 	        android:layout_toRightOf="@id/news_icon"
 	        android:gravity="center_vertical"
-	        android:paddingRight="5dip" />
+	        android:paddingLeft="5dip" />
+    </RelativeLayout>
+    <FrameLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
 	    <TextView
 	        android:id="@+id/news_timestamp"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        android:textColor="@color/tile_timestamp"
 	        android:textStyle="italic"
-	        android:layout_toRightOf="@id/news_origin"
-	        android:layout_alignParentRight="true"
-	        android:gravity="center_vertical|right" />
-    </RelativeLayout>
-    <FrameLayout
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent">
-	    <!-- <ImageView
-	        android:id="@+id/news_picture"
-	        android:layout_width="fill_parent"
-	        android:layout_height="wrap_content"
-	     	android:scaleType="fitXY" /> -->
+	        android:layout_gravity="bottom|right"
+	        android:gravity="bottom|right" />
 	    <TextView
 	        android:id="@+id/news_title"
 	        style="@style/TileHeading" />

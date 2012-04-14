@@ -13,7 +13,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Intent;
+import android.content.ClipData.Item;
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.LayerDrawable;
+import android.graphics.drawable.ShapeDrawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Html;
@@ -41,6 +47,11 @@ public class NewsTileFragment extends Fragment {
 
 	private JSONArray set;
 	private int position;
+	// The interestMultiplier says how much a tiles size can be changed simply by interest variance
+	// The higher the multiplier the larger difference in tile sizes
+	float interestMultiplier = 0.2f;
+	// Focus on these articles by changing the background to blue, indicates high interest level
+	float highlightThreshold = 0.82f;
 	
 	public static NewsTileFragment newInstance(JSONArray set, int position) {
 		NewsTileFragment fragment = new NewsTileFragment();
@@ -97,7 +108,7 @@ public class NewsTileFragment extends Fragment {
 			public int compare(JSONObject lhs, JSONObject rhs) {
 				double left = lhs.optDouble("interestLevel", 0);
 				double right = rhs.optDouble("interestLevel", 0);
-				return (left < right ? -1 : 1);
+				return (left > right ? -1 : 1);
 			}
 		});
 		int mid = stories.size() / 2;
@@ -114,9 +125,6 @@ public class NewsTileFragment extends Fragment {
 		ArrayList<View> interestViews = new ArrayList<View>();
 		float rowSum = row.getWeightSum();
 		float averageWeight = rowSum / stories.size();
-		// The interestMultiplier says how much a tiles size can be changed simply by interest variance
-		// The higher the multiplier the larger difference in tile sizes
-		float interestMultiplier = 0.2f;
 		float sumWeights = 0;
 		for(int i = 0; i < stories.size(); i++) {
 			JSONObject story = stories.get(i);
@@ -174,6 +182,13 @@ public class NewsTileFragment extends Fragment {
 			} catch (URISyntaxException e) {
 				e.printStackTrace();
 			}
+		}
+		if(story.optDouble("interestLevel", 0) > highlightThreshold) {
+			tile.setBackgroundResource(R.drawable.tile_background_high_interest);
+			title.setTextColor(getResources().getColor(R.color.tile_heading_high_interest));
+			title.setShadowLayer(2, 1, 1, getResources().getColor(R.color.tile_heading_shadow_high_interest));
+			timestamp.setTextColor(getResources().getColor(R.color.tile_timestamp_high_interest));
+			origin.setTextColor(getResources().getColor(R.color.tile_timestamp_high_interest));
 		}
 	}
 
