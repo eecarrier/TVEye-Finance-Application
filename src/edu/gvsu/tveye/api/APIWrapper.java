@@ -340,6 +340,43 @@ public class APIWrapper {
 
 		@Override
 		protected JSONObject doInBackground(Void... v) {
+			try {
+				// Create an HTTP request using Apache's HTTP client library
+				String path = "/my/analytics";
+				HttpGet request = new HttpGet(createURI(path));
+				request.setHeader("Pragma", Config.DEV_KEY);
+				request.setHeader("Accept", "text/html");
+				authenticate(request, callback.getContext());
+
+				// Execute the request using an HttpClient
+				HttpResponse response = httpClient.execute(request);
+				HttpEntity responseEntity = response.getEntity();
+				int statusCode = response.getStatusLine().getStatusCode();
+				Log.d("GetAnalytics", request.getURI().toString());
+				for (Header header : request.getAllHeaders()) {
+					Log.d(header.getName(), header.getValue());
+				}
+				if (statusCode == 403) {
+					//return new AuthenticationException(CREDENTIALS_INVALID);
+				} else if (statusCode == 200) {
+					// Consume the HTTP response and create a JSONObject from
+					// content
+					JSONObject content = (JSONObject) responseEntity;
+					Log.d("NewsDetailsTask", "Received content:\n" + content);
+					return content;
+				} else {
+					//return new Exception("Server responded with status code " + response.getStatusLine().getStatusCode());
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+				//return e;
+			} catch (AuthenticationException e) {
+				e.printStackTrace();
+				//return e;
+			} catch (URISyntaxException e) {
+				e.printStackTrace();
+				//return e;
+			}
 			/*
 			 * try { // Create an HTTP request using Apache's HTTP client
 			 * library String path = "/my/analytics"; HttpGet request = new

@@ -51,11 +51,33 @@ public class LikeFragment extends Fragment{
 		View view = inflater.inflate(R.layout.like_fragment, null);
 		grid = (GridView)view.findViewById(R.id.gridview);
 		
-		String[] names = new String[] {"a", "b", "c", this.toString()};
-		adapter = new SettingsGridAdapter(getActivity(), names);
-		grid.setAdapter(adapter);
+		new APIWrapper.GetAnalyticsTask(new JSONObjectCallback() {
+			public void onError(JSONObject object) {
+				Toast.makeText(getActivity(),
+						"Received error!", Toast.LENGTH_LONG)
+						.show();
+			}
+
+			public void onComplete(JSONObject object) {
+				try {
+					object.get("count");
+					String[] names = new String[] {"a", "b", "c", (String) object.get("count"), this.toString()};
+					adapter = new SettingsGridAdapter(getActivity(), names);
+					grid.setAdapter(adapter);
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+
+			public Context getContext() {
+				// TODO Auto-generated method stub
+				return getActivity();
+			}
+		});		
 		
 		return view;
 	}
+	
 	
 }
