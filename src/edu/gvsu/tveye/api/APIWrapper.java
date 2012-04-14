@@ -224,7 +224,7 @@ public class APIWrapper {
 				e.printStackTrace();
 				return exceptionToJSON(e);
 			} catch (JSONException e) {
-			//	e.printStackTrace();
+				// e.printStackTrace();
 				System.err.println(e.getMessage());
 				return exceptionToJSON(e);
 			} catch (AuthenticationException e) {
@@ -345,64 +345,40 @@ public class APIWrapper {
 				String path = "/my/analytics";
 				HttpGet request = new HttpGet(createURI(path));
 				request.setHeader("Pragma", Config.DEV_KEY);
-				request.setHeader("Accept", "text/html");
+				request.setHeader("Accept", "application/json");
 				authenticate(request, callback.getContext());
 
 				// Execute the request using an HttpClient
 				HttpResponse response = httpClient.execute(request);
 				HttpEntity responseEntity = response.getEntity();
 				int statusCode = response.getStatusLine().getStatusCode();
-				Log.d("GetAnalytics", request.getURI().toString());
-				for (Header header : request.getAllHeaders()) {
-					Log.d(header.getName(), header.getValue());
-				}
 				if (statusCode == 403) {
-					//return new AuthenticationException(CREDENTIALS_INVALID);
+					return exceptionToJSON(new AuthenticationException(
+							CREDENTIALS_INVALID));
 				} else if (statusCode == 200) {
 					// Consume the HTTP response and create a JSONObject from
 					// content
-					JSONObject content = (JSONObject) responseEntity;
-					Log.d("NewsDetailsTask", "Received content:\n" + content);
-					return content;
+					String content = new String(
+							consumeStream(responseEntity.getContent()));
+					return new JSONObject(content);
 				} else {
-					//return new Exception("Server responded with status code " + response.getStatusLine().getStatusCode());
+					return exceptionToJSON(new Exception(
+							"Server responded with status code "
+									+ response.getStatusLine().getStatusCode()));
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
-				//return e;
+				return exceptionToJSON(e);
 			} catch (AuthenticationException e) {
 				e.printStackTrace();
-				//return e;
+				return exceptionToJSON(e);
 			} catch (URISyntaxException e) {
 				e.printStackTrace();
-				//return e;
+				return exceptionToJSON(e);
+			} catch (JSONException e) {
+				e.printStackTrace();
+				return exceptionToJSON(e);
 			}
-			/*
-			 * try { // Create an HTTP request using Apache's HTTP client
-			 * library String path = "/my/analytics"; HttpGet request = new
-			 * HttpGet(createURI(path)); request.setHeader("Pragma",
-			 * Config.DEV_KEY); request.setHeader("Accept", "application/json");
-			 * authenticate(request, callback.getContext());
-			 * 
-			 * // Execute the request using an HttpClient HttpResponse response
-			 * = httpClient.execute(request); HttpEntity responseEntity =
-			 * response.getEntity(); int statusCode =
-			 * response.getStatusLine().getStatusCode(); // TODO: don't forget
-			 * to do this for(Header header : request.getAllHeaders()) {
-			 * Log.d(header.getName(), header.getValue()); } if (statusCode ==
-			 * 403) { return new AuthenticationException( CREDENTIALS_INVALID);
-			 * } else if (statusCode == 200) { // Consume the HTTP response and
-			 * create a JSONObject from // content String content = new String(
-			 * consumeStream(responseEntity.getContent()));
-			 * Log.d("NewsDetailsTask", "Received content:\n" + content); return
-			 * content; } else { return new Exception(
-			 * "Server responded with status code " +
-			 * response.getStatusLine().getStatusCode()); } } catch (IOException
-			 * e) { e.printStackTrace(); return e; } catch
-			 * (AuthenticationException e) { e.printStackTrace(); return e; }
-			 * catch (URISyntaxException e) { e.printStackTrace(); return e; }
-			 */
-			return null;
 		}
 
 		@Override
@@ -415,59 +391,60 @@ public class APIWrapper {
 		}
 
 	}
-	
-public static class PostAnalyticsTask extends 
-			AsyncTask<String, Void, Object> {
-	
-	private StringCallback callback;
-	
-	public PostAnalyticsTask(StringCallback callback) {
-		this.callback = callback;
-	}
 
-	@Override
-	protected Object doInBackground(String... params) {
-		 try { 		 
-			 Double PREFERENCEDEGREE = .5;
-			 // Create an HTTP request using Apache's HTTP client library
-			 String path = "/my/analytics";
-			 HttpPost post = new HttpPost(createURI(path)); 
-			 post.setHeader("Pragma", Config.DEV_KEY); 
-			 authenticate(post, callback.getContext());
-			 
-			 List <NameValuePair> nvps = new ArrayList <NameValuePair>();
-			 nvps.add(new BasicNameValuePair("action", params[0]));
-			 nvps.add(new BasicNameValuePair("target", params[1]));
-			 nvps.add(new BasicNameValuePair("targetId", params[2]));
-			 nvps.add(new BasicNameValuePair("degree", PREFERENCEDEGREE.toString()));
-			 post.setEntity(new UrlEncodedFormEntity(nvps)); 
-			  
-			 // Execute the request using an HttpClient 
-			 HttpResponse response = httpClient.execute(post); 
-			 int statusCode = response.getStatusLine().getStatusCode(); 
-			 if (statusCode == 403) { 
-				  return new AuthenticationException(CREDENTIALS_INVALID);
-			 } else if (statusCode == 200) {  
-				 return "OK";
-			  } else { 
-				  return new Exception("Server responded with status code " + response.getStatusLine().getStatusCode()); 
-			  } 
+	public static class PostAnalyticsTask extends
+			AsyncTask<String, Void, Object> {
+
+		private StringCallback callback;
+
+		public PostAnalyticsTask(StringCallback callback) {
+			this.callback = callback;
+		}
+
+		@Override
+		protected Object doInBackground(String... params) {
+			try {
+				Double PREFERENCEDEGREE = .5;
+				// Create an HTTP request using Apache's HTTP client library
+				String path = "/my/analytics";
+				HttpPost post = new HttpPost(createURI(path));
+				post.setHeader("Pragma", Config.DEV_KEY);
+				authenticate(post, callback.getContext());
+
+				List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+				nvps.add(new BasicNameValuePair("action", params[0]));
+				nvps.add(new BasicNameValuePair("target", params[1]));
+				nvps.add(new BasicNameValuePair("targetId", params[2]));
+				nvps.add(new BasicNameValuePair("degree", PREFERENCEDEGREE
+						.toString()));
+				post.setEntity(new UrlEncodedFormEntity(nvps));
+
+				// Execute the request using an HttpClient
+				HttpResponse response = httpClient.execute(post);
+				int statusCode = response.getStatusLine().getStatusCode();
+				if (statusCode == 403) {
+					return new AuthenticationException(CREDENTIALS_INVALID);
+				} else if (statusCode == 200) {
+					return "OK";
+				} else {
+					return new Exception("Server responded with status code "
+							+ response.getStatusLine().getStatusCode());
+				}
 			} catch (Exception e) {
 				e.printStackTrace();
 				return e;
 			}
-	}
+		}
 
-	@Override
-	protected void onPostExecute(Object result) {
-		if (result instanceof Exception) {
-			callback.onError((Exception) result);
-		} else if (result instanceof String) {
-			callback.onComplete((String) result);
+		@Override
+		protected void onPostExecute(Object result) {
+			if (result instanceof Exception) {
+				callback.onError((Exception) result);
+			} else if (result instanceof String) {
+				callback.onComplete((String) result);
+			}
 		}
 	}
-}
-
 
 	public static interface StringCallback {
 

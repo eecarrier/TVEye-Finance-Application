@@ -22,6 +22,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.text.Html;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -53,6 +54,7 @@ public class LikeFragment extends Fragment{
 		
 		new APIWrapper.GetAnalyticsTask(new JSONObjectCallback() {
 			public void onError(JSONObject object) {
+				Log.d("LikeFragment", object.toString());
 				Toast.makeText(getActivity(),
 						"Received error!", Toast.LENGTH_LONG)
 						.show();
@@ -60,21 +62,19 @@ public class LikeFragment extends Fragment{
 
 			public void onComplete(JSONObject object) {
 				try {
-					object.get("count");
+					Log.d("LikeFragment", object.toString());
 					String[] names = new String[] {"a", "b", "c", (String) object.get("count"), this.toString()};
 					adapter = new SettingsGridAdapter(getActivity(), names);
 					grid.setAdapter(adapter);
 				} catch (JSONException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
 
 			public Context getContext() {
-				// TODO Auto-generated method stub
 				return getActivity();
 			}
-		});		
+		}).execute();		
 		
 		return view;
 	}
