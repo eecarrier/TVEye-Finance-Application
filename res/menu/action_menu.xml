@@ -1,24 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item
-          android:id="@+id/menu_overflow"
-          android:title="test"
-          android:icon="@drawable/ic_overflow_holo_dark"
-          android:showAsAction="always">
-        <menu>
+    
             <item
                 android:id="@+id/menu_refresh"
-                android:showAsAction="withText|always"
+                android:showAsAction="withText"
                 android:title="Refresh"/>
             <item
                 android:id="@+id/menu_settings"
-                android:showAsAction="withText|always"
+                android:showAsAction="withText"
                 android:title="Settings"/>
             <item
                 android:id="@+id/menu_logout"
-                android:showAsAction="withText|always"
-                android:title="Logout"/>
-
-        </menu>
-    </item>
+                android:showAsAction="withText"
+                android:title="Logout"/>S
 </menu>
