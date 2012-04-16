@@ -37,7 +37,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class LikeFragment extends Fragment{
+public class SettingsCompanyFragment extends Fragment{
 	
 	GridView grid;
 	SettingsGridAdapter adapter;
@@ -49,7 +49,7 @@ public class LikeFragment extends Fragment{
 	
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		View view = inflater.inflate(R.layout.like_fragment, null);
+		View view = inflater.inflate(R.layout.settings_company_fragment, null);
 		grid = (GridView)view.findViewById(R.id.gridview);
 		
 		new APIWrapper.GetAnalyticsTask(new JSONObjectCallback() {

@@ -23,17 +23,17 @@ public class SettingsActivity extends Activity {
 
 		bar.addTab(bar
 				.newTab()
-				.setText("Like")
+				.setText("History")
 				.setTabListener(
-						new TabListener<LikeFragment>(this,
-								"Like", LikeFragment.class)));
+						new TabListener<SettingsHistoryFragment>(this,
+								"History", SettingsHistoryFragment.class)));
 		bar.addTab(bar
 				.newTab()
-				.setText("Dislike")
+				.setText("Companies")
 				.setTabListener(
-						new TabListener<LikeFragment>(
-								this, "Dislike",
-								LikeFragment.class)));
+						new TabListener<SettingsCompanyFragment>(
+								this, "Companies",
+								SettingsCompanyFragment.class)));
 
 		FragmentTransaction ft = getFragmentManager().beginTransaction();
 		ft.addToBackStack(null);
