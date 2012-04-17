@@ -30,21 +30,15 @@
 			      	android:orientation="vertical"
 			      	android:layout_margin="10dp"
 			      	android:layout_width="fill_parent">
-					<!-- <ImageView
-						android:id="@+id/news_detail_picture"
-						android:layout_width="fill_parent"
-						android:layout_height="wrap_content"
-						android:scaleType="fitXY" />-->
 					<TextView
 						android:id="@+id/news_detail_title"
 						android:layout_gravity="bottom"
 						style="@style/TileHeading"/>
-				   <!--<TextView
-				        android:id="@+id/news_detail_timestamp"
-				        android:layout_width="match_parent"
-				        android:layout_height="wrap_content"
-				        android:textColor="@color/tile_timestamp"
-				        android:textStyle="italic"/>-->
+					<ImageView
+						android:id="@+id/news_detail_picture"
+						android:layout_width="fill_parent"
+						android:layout_height="wrap_content"
+						android:scaleType="fitXY" />
 				    <View
 				        android:layout_width="match_parent"
 				        android:layout_height="10dp"/>
@@ -65,17 +59,15 @@
 		        android:layout_width="0dp"
 		        android:layout_height="fill_parent"
 		        android:layout_weight="3"
+		        android:weightSum="15"
 		        android:orientation="vertical"
-		        android:weightSum="10"
 		        android:paddingTop="5dip"
+		        android:paddingBottom="5dip"
 		        >
-		        <View 
-		            android:layout_width="match_parent"
-		            android:layout_height="0dp"
-		            android:layout_weight="1"/>
 		        <ScrollView
 	                android:layout_width="wrap_content"
-	                android:layout_height="fill_parent">
+	                android:layout_height="0dp" 
+	                android:layout_weight="14">
 		            <LinearLayout
 		                android:id="@+id/references"
 		        		android:layout_height="wrap_content"
@@ -84,10 +76,25 @@
 		                
 		            </LinearLayout>
 		        </ScrollView>
-		        <View 
+		        <LinearLayout
+		            android:id="@+id/textSizeBar"
 		            android:layout_width="match_parent"
 		            android:layout_height="0dp"
-		            android:layout_weight="1"/>
+		            android:layout_weight="1"
+		            android:orientation="horizontal">
+		            <Button
+		                android:id="@+id/smallerTextButton"
+		                android:layout_width="wrap_content"
+		                android:layout_height="match_parent"
+		                android:textSize="12dp"
+		                android:text="   A   " />
+		            <Button 
+		                android:id="@+id/largerTextButton"
+		                android:layout_width="wrap_content"
+		                android:layout_height="match_parent"
+		                android:textSize="22dp"
+		                android:text="   A   "/>
+		        </LinearLayout>
 		    </LinearLayout>
 		</LinearLayout>
 	</RelativeLayout>

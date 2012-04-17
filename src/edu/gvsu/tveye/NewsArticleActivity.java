@@ -14,6 +14,8 @@ import org.json.JSONObject;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.Html;
@@ -21,18 +23,22 @@ import android.text.Html.ImageGetter;
 import android.text.Spanned;
 import android.text.format.DateUtils;
 import android.text.method.LinkMovementMethod;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
 import android.widget.Toast;
 import edu.gvsu.tveye.api.APIWrapper;
+import edu.gvsu.tveye.util.ImageDownloadTask;
 
 public class NewsArticleActivity extends Activity {
 	
@@ -78,38 +84,35 @@ public class NewsArticleActivity extends Activity {
 				}
 
 				public void onComplete(final String data) {
-					//picture = (ImageView) findViewById(R.id.news_detail_picture);
+					picture = (ImageView) findViewById(R.id.news_detail_picture);
 					title = (TextView) findViewById(R.id.news_detail_title);
 					content = (TextView) findViewById(R.id.news_detail_content);
 					
-					Spanned fullContent = Html.fromHtml(data.substring(data.indexOf("<div class=\'author\'>")), new ImageGetter() {
-						public InputStream imageFetch(String source) throws MalformedURLException,IOException {
-							URL url = new URL(source);
-							Object obj = url.getContent();
-							InputStream content = (InputStream)obj; 
-						    return content;
-						}
-
-						public Drawable getDrawable(String source){
-							Drawable d = null;
-							try {
-									InputStream src = imageFetch(source);
-									d = Drawable.createFromStream(src, "src");
-									if(d != null){
-										d.setBounds(0, 0, d.getIntrinsicWidth(), d.getIntrinsicHeight());
+					if (story.has("imageUrl")) {
+						try {
+							if (!story.getString("imageUrl").equals("")) {
+								new ImageDownloadTask(new ImageDownloadTask.ImageCallback() {
+									public void imageFailed(String url) {
+										picture.setVisibility(View.GONE);
 									}
+	
+									public void imageDownloaded(String url, Bitmap bitmap) {
+										picture.setLayoutParams(new LinearLayout.LayoutParams(
+												bitmap.getWidth(), bitmap.getHeight()));
+										picture.setImageBitmap(bitmap);
+									}
+								}).execute(story.getString("imageUrl"));
 							}
-							catch (Exception e){
-								e.printStackTrace();
-							}
-							return d;
 						}
-					}, null);
+						catch(Exception e) {
+							e.printStackTrace();
+						}
+					}
 					
 					//This is not the ideal way to find the title, but there is no element with id=title
 					title.setText(Html.fromHtml(data.substring(data.indexOf("<h1>"), data.indexOf("</h1>"))));
 					title.setMovementMethod(LinkMovementMethod.getInstance());
-					content.setText(fullContent);
+					content.setText(Html.fromHtml(data.substring(data.indexOf("<div class=\'author\'>"))));
 					content.setMovementMethod(LinkMovementMethod.getInstance());
 					
 					try {
