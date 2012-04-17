@@ -7,6 +7,8 @@ import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import org.apache.http.auth.AuthenticationException;
 import org.apache.http.client.utils.URLEncodedUtils;
@@ -46,18 +48,28 @@ import edu.gvsu.tveye.util.ImageDownloadTask;
 
 public class NewsArticleActivity extends Activity {
 	
+	private final String THUMBSUP = ".5";
+	private final String THUMBSDOWN = ".5";
+	private final String REFERENCELIKE = ".8";
+	private final String TIMEONPAGELIKE = ".1";
+	private final Long BEFORELIKE = 20000L;
+	private final Long LIKEINTERVAL = 20000L;
+	private final String UPDATEMESSAGE = "Preferences successfully updated!";
+	private final String QUIETUPDATE = "No Toast";
+	private final int MAXLIKES = 5;
+	private final int TEXTSIZECHANGE = 3;
+	
 	private JSONObject story;
 	private JSONArray tickers;
-	private ImageButton thumbsUp;
-	private ImageButton thumbsDown;
 	private Button smallerText;
 	private Button largerText;
 	private ImageView picture;
 	private TextView title;
-	private TextView timestamp;
 	private TextView content;
 	private Toast toast;
-	private Integer id;
+	private String id;
+	private Timer timer=null;
+	private int numLikes = 0;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -66,7 +78,7 @@ public class NewsArticleActivity extends Activity {
         
         try {
 			story = new JSONObject(getIntent().getExtras().getString("metadata"));
-			id = (Integer) story.get("id");
+			id = story.getString("id");
 			setTitle(Html.fromHtml(story.getString("title")));
 			
 	        new APIWrapper.NewsDetailsTask(new APIWrapper.StringCallback() {
@@ -96,15 +108,26 @@ public class NewsArticleActivity extends Activity {
 					smallerText = (Button) findViewById(R.id.smallerTextButton);
 					smallerText.setOnClickListener(new OnClickListener() {
 						public void onClick(View V) {
-							content.setTextSize(content.getTextSize()-5);
+							content.setTextSize(content.getTextSize()-TEXTSIZECHANGE);
 						}
 					});
 					largerText = (Button) findViewById(R.id.largerTextButton);
 					largerText.setOnClickListener(new OnClickListener() {
 						public void onClick(View V) {
-							content.setTextSize(content.getTextSize()+5);
+							content.setTextSize(content.getTextSize()+TEXTSIZECHANGE);
 						}
 					});
+					timer = new Timer();
+					timer.scheduleAtFixedRate(new TimerTask() {
+						public void run() {
+							new APIWrapper.PostAnalyticsTask(analytics).execute("like","news",id,TIMEONPAGELIKE,QUIETUPDATE);
+							numLikes++;
+							if (numLikes >= MAXLIKES) {
+								timer.cancel();
+								timer.purge();
+							}
+						}
+					}, BEFORELIKE, LIKEINTERVAL);
 					
 					if (story.has("imageUrl")) {
 						try {
@@ -112,12 +135,14 @@ public class NewsArticleActivity extends Activity {
 								new ImageDownloadTask(new ImageDownloadTask.ImageCallback() {
 									public void imageFailed(String url) {
 										picture.setVisibility(View.GONE);
+										Log.d("image", "no good");
 									}
 	
 									public void imageDownloaded(String url, Bitmap bitmap) {
 										picture.setLayoutParams(new LinearLayout.LayoutParams(
 												bitmap.getWidth(), bitmap.getHeight()));
 										picture.setImageBitmap(bitmap);
+										Log.d("image", "good");
 									}
 								}).execute(story.getString("imageUrl"));
 							}
@@ -126,7 +151,7 @@ public class NewsArticleActivity extends Activity {
 							e.printStackTrace();
 						}
 					}
-					//This is not the ideal way to find the title, but there is no element with id=title
+					
 					String titleContent = String.format("<a href=\"%s\">%s</a>", story.optString("url", "#"), story.optString("title", ""));
 					title.setText(Html.fromHtml(titleContent));
 					title.setMovementMethod(LinkMovementMethod.getInstance());
@@ -136,19 +161,14 @@ public class NewsArticleActivity extends Activity {
 					try {
 						LinearLayout references = (LinearLayout) findViewById(R.id.references);
 						tickers = story.getJSONArray("tickers");
-						tickers.put(new JSONObject("{\"company\":\"Sample\", \"id\":\"sample\"}"));
-						tickers.put(new JSONObject("{\"company\":\"Short\", \"id\":\"short\"}"));
-						tickers.put(new JSONObject("{\"company\":\"Motorola\", \"id\":\"MSI\"}"));
 						LayoutInflater inflate = LayoutInflater.from(getContext());
 						for (int i = 0; i < tickers.length(); i++) {
 							Button button = (Button) inflate.inflate(R.layout.like_button, null);
 							button.setText(tickers.getJSONObject(i).getString("company"));
-							//button.setPadding(40,20,40,20);
 							final String tickerId = tickers.getJSONObject(i).getString("id");
 							button.setOnClickListener(new OnClickListener() {
 								public void onClick(View v) {
-									//TODO how to get different actions for each button
-									new APIWrapper.PostAnalyticsTask(analytics).execute("like","ticker",tickerId);
+									new APIWrapper.PostAnalyticsTask(analytics).execute("like","ticker",tickerId, REFERENCELIKE, UPDATEMESSAGE);
 								}
 							});
 							references.addView(button);
@@ -171,7 +191,6 @@ public class NewsArticleActivity extends Activity {
 		}
     }
     
-    //TODO Will using only one object cause problems?
     private APIWrapper.StringCallback analytics = new APIWrapper.StringCallback() {
     	public void onError(Exception e) {
 			Context context = getApplicationContext();
@@ -194,9 +213,10 @@ public class NewsArticleActivity extends Activity {
 		}
 
 		public void onComplete(String data) {
-			String message = "Preferences successfully updated!";
-			toast = Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT);
-			toast.show();
+			if (!data.equals(QUIETUPDATE)) {
+				toast = Toast.makeText(getApplicationContext(), data, Toast.LENGTH_SHORT);
+				toast.show();
+			}
 		}
 		
 		public Context getContext() {
@@ -215,15 +235,24 @@ public class NewsArticleActivity extends Activity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.menu_up: {
-			new APIWrapper.PostAnalyticsTask(analytics).execute("like","news",id.toString());
+			new APIWrapper.PostAnalyticsTask(analytics).execute("like","news",id.toString(),THUMBSUP,UPDATEMESSAGE);
 			return true;
 		}
 		case R.id.menu_down: {
-			new APIWrapper.PostAnalyticsTask(analytics).execute("dislike","news",id.toString());
+			new APIWrapper.PostAnalyticsTask(analytics).execute("dislike","news",id.toString(),THUMBSDOWN,UPDATEMESSAGE);
 			return true;
 		}
 		default:
             return super.onOptionsItemSelected(item);
 		}
+	}
+	
+	@Override
+	public void onPause() {
+		if (timer != null) {
+			timer.cancel();
+			timer.purge();
+		}
+		super.onPause();
 	}
 }

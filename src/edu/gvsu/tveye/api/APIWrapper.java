@@ -465,7 +465,6 @@ public class APIWrapper {
 		@Override
 		protected Object doInBackground(String... params) {
 			try {
-				Double PREFERENCEDEGREE = .5;
 				// Create an HTTP request using Apache's HTTP client library
 				String path = "/my/analytics";
 				HttpPost post = new HttpPost(createURI(path));
@@ -476,8 +475,7 @@ public class APIWrapper {
 				nvps.add(new BasicNameValuePair("action", params[0]));
 				nvps.add(new BasicNameValuePair("target", params[1]));
 				nvps.add(new BasicNameValuePair("targetId", params[2]));
-				nvps.add(new BasicNameValuePair("degree", PREFERENCEDEGREE
-						.toString()));
+				nvps.add(new BasicNameValuePair("degree", params[3]));
 				post.setEntity(new UrlEncodedFormEntity(nvps));
 
 				// Execute the request using an HttpClient
@@ -486,7 +484,7 @@ public class APIWrapper {
 				if (statusCode == 403) {
 					return new AuthenticationException(CREDENTIALS_INVALID);
 				} else if (statusCode == 200) {
-					return "OK";
+					return params[4];
 				} else {
 					return new Exception("Server responded with status code "
 							+ response.getStatusLine().getStatusCode());
