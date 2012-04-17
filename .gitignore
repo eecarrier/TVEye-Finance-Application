@@ -2,4 +2,6 @@ bin/
 
 bin/*
 
+gen/
+
 src/edu/gvsu/tveye/api/Config.java

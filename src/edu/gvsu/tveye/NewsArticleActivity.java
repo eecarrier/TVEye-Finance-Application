@@ -24,6 +24,7 @@ import android.text.Spanned;
 import android.text.format.DateUtils;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -63,7 +64,7 @@ public class NewsArticleActivity extends Activity {
         try {
 			story = new JSONObject(getIntent().getExtras().getString("metadata"));
 			id = (Integer) story.get("id");
-			setTitle(story.getString("title"));
+			setTitle(Html.fromHtml(story.getString("title")));
 			
 	        new APIWrapper.NewsDetailsTask(new APIWrapper.StringCallback() {
 				public void onError(Exception e) {
@@ -132,17 +133,21 @@ public class NewsArticleActivity extends Activity {
 					try {
 						LinearLayout references = (LinearLayout) findViewById(R.id.references);
 						tickers = story.getJSONArray("tickers");
-						for (int i = 0; i < 8; i++) {
-							Button button = new Button(getContext());
+						tickers.put(new JSONObject("{\"company\":\"Sample\", \"id\":\"sample\"}"));
+						tickers.put(new JSONObject("{\"company\":\"Short\", \"id\":\"short\"}"));
+						tickers.put(new JSONObject("{\"company\":\"Motorola\", \"id\":\"MSI\"}"));
+						LayoutInflater inflate = LayoutInflater.from(getContext());
+						for (int i = 0; i < tickers.length(); i++) {
+							Button button = (Button) inflate.inflate(R.layout.like_button, null);
 							button.setText(tickers.getJSONObject(i).getString("company"));
-							button.setPadding(40,20,40,20);
-							/*button.setOnClickListener(new OnClickListener() {
+							//button.setPadding(40,20,40,20);
+							final String tickerId = tickers.getJSONObject(i).getString("id");
+							button.setOnClickListener(new OnClickListener() {
 								public void onClick(View v) {
 									//TODO how to get different actions for each button
-									String refId = tickers.getJSONObject(i).getString("id");
-									new APIWrapper.PostAnalyticsTask(analytics).execute("like","ticker",refId);
+									new APIWrapper.PostAnalyticsTask(analytics).execute("like","ticker",tickerId);
 								}
-							});*/
+							});
 							references.addView(button);
 						}
 					} catch (Exception e) {
