@@ -4,9 +4,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.Date;
 
 import org.apache.http.auth.AuthenticationException;
+import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.impl.cookie.DateParseException;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -123,9 +126,9 @@ public class NewsArticleActivity extends Activity {
 							e.printStackTrace();
 						}
 					}
-					
 					//This is not the ideal way to find the title, but there is no element with id=title
-					title.setText(Html.fromHtml(data.substring(data.indexOf("<h1>"), data.indexOf("</h1>"))));
+					String titleContent = String.format("<a href=\"%s\">%s</a>", story.optString("url", "#"), story.optString("title", ""));
+					title.setText(Html.fromHtml(titleContent));
 					title.setMovementMethod(LinkMovementMethod.getInstance());
 					content.setText(Html.fromHtml(data.substring(data.indexOf("<div class=\'author\'>"))));
 					content.setMovementMethod(LinkMovementMethod.getInstance());
