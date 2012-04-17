@@ -52,7 +52,7 @@ public class SettingsCompanyFragment extends Fragment{
 		View view = inflater.inflate(R.layout.settings_company_fragment, null);
 		grid = (GridView)view.findViewById(R.id.gridview);
 		
-		new APIWrapper.GetAnalyticsTask(new JSONObjectCallback() {
+		new APIWrapper.AccumulatedAnalyticsTask(new JSONObjectCallback() {
 			public void onError(JSONObject object) {
 				Log.d("LikeFragment", object.toString());
 				Toast.makeText(getActivity(),
@@ -63,7 +63,7 @@ public class SettingsCompanyFragment extends Fragment{
 			public void onComplete(JSONObject object) {
 				try {
 					Log.d("LikeFragment", object.toString());
-					String[] names = new String[] {"a", "b", "c", (String) object.get("count"), this.toString()};
+					String[] names = new String[] {"a", "b", "c", "" + object.get("count"), this.toString()};
 					adapter = new SettingsGridAdapter(getActivity(), names);
 					grid.setAdapter(adapter);
 				} catch (JSONException e) {
