@@ -33,7 +33,8 @@
 					<TextView
 						android:id="@+id/news_detail_title"
 						android:layout_gravity="bottom"
-						style="@style/TileHeading"/>
+						android:textColorLink="@color/tile_heading"
+						style="@style/TileHeading" />
 					<ImageView
 						android:id="@+id/news_detail_picture"
 						android:layout_width="fill_parent"
@@ -45,7 +46,8 @@
 				    <TextView
 				        android:id="@+id/news_detail_content"
 				        android:layout_width="match_parent"
-				        android:layout_height="wrap_content"/>
+				        android:layout_height="wrap_content"
+				        android:textSize="20sp"/>
 				</LinearLayout>
 			</ScrollView>
 			

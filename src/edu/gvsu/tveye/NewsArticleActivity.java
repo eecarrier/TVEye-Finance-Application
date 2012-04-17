@@ -46,6 +46,8 @@ public class NewsArticleActivity extends Activity {
 	private JSONArray tickers;
 	private ImageButton thumbsUp;
 	private ImageButton thumbsDown;
+	private Button smallerText;
+	private Button largerText;
 	private ImageView picture;
 	private TextView title;
 	private TextView timestamp;
@@ -87,6 +89,18 @@ public class NewsArticleActivity extends Activity {
 					picture = (ImageView) findViewById(R.id.news_detail_picture);
 					title = (TextView) findViewById(R.id.news_detail_title);
 					content = (TextView) findViewById(R.id.news_detail_content);
+					smallerText = (Button) findViewById(R.id.smallerTextButton);
+					smallerText.setOnClickListener(new OnClickListener() {
+						public void onClick(View V) {
+							content.setTextSize(content.getTextSize()-5);
+						}
+					});
+					largerText = (Button) findViewById(R.id.largerTextButton);
+					largerText.setOnClickListener(new OnClickListener() {
+						public void onClick(View V) {
+							content.setTextSize(content.getTextSize()+5);
+						}
+					});
 					
 					if (story.has("imageUrl")) {
 						try {
@@ -119,10 +133,8 @@ public class NewsArticleActivity extends Activity {
 						LinearLayout references = (LinearLayout) findViewById(R.id.references);
 						tickers = story.getJSONArray("tickers");
 						for (int i = 0; i < 8; i++) {
-						//for(int i = 0; i < tickers.length(); i++) {
 							Button button = new Button(getContext());
-							//button.setText(tickers.getJSONObject(i).getString("company"));
-							button.setText("Sample");
+							button.setText(tickers.getJSONObject(i).getString("company"));
 							button.setPadding(40,20,40,20);
 							/*button.setOnClickListener(new OnClickListener() {
 								public void onClick(View v) {
@@ -133,7 +145,6 @@ public class NewsArticleActivity extends Activity {
 							});*/
 							references.addView(button);
 						}
-						System.out.println("Set references");
 					} catch (Exception e) {
 						e.printStackTrace();
 					}

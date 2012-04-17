@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@+id/menu_up"
-          android:title="Up"
           android:showAsAction="withText|always"
-          android:icon="@drawable/thumbs_up" />
+          android:icon="@drawable/thumbs_up"
+          android:title=" " />
     <item android:id="@+id/menu_down"
-          android:title="Down"
           android:showAsAction="withText|always"
-          android:icon="@drawable/thumbs_down"  />
+          android:icon="@drawable/thumbs_down" 
+          android:title=" " />
 </menu>
