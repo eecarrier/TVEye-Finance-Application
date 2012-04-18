@@ -1,5 +1,6 @@
 package edu.gvsu.tveye.fragment;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import edu.gvsu.tveye.R;
@@ -40,7 +41,12 @@ public class SettingsHistoryFragment extends ListFragment{
 			public void onComplete(JSONObject object) {
 				try {
 					Log.d("LikeFragment", object.toString());
-					String[] names = new String[] {"a", "b", "c", "" + object.get("count"), this.toString()};
+					JSONArray list = object.getJSONArray("list");
+					String[] names = new String[list.length()]; //{"a", "b", "c", "" + object.get("s"), this.toString()};
+					for (int i = 0; i < list.length(); ++i) {
+					    JSONObject rec = list.getJSONObject(i);
+					    names[i] = rec.toString();
+					}
 					setListAdapter(new ArrayAdapter<String>(getActivity(),
 		                    android.R.layout.simple_list_item_1, names));
 				} catch (JSONException e) {
