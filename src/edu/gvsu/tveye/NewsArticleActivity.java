@@ -161,11 +161,16 @@ public class NewsArticleActivity extends Activity {
 					try {
 						LinearLayout references = (LinearLayout) findViewById(R.id.references);
 						tickers = story.getJSONArray("tickers");
+						/*tickers.put(new JSONObject("{\"company\":\"Google\"}"));
+						tickers.put(new JSONObject("{\"company\":\"Android\"}"));
+						tickers.put(new JSONObject("{\"company\":\"Deutsche Bank\"}"));
+						tickers.put(new JSONObject("{\"company\":\"Apple\"}"));
+						tickers.put(new JSONObject("{\"company\":\"Facebook\"}"));*/
 						LayoutInflater inflate = LayoutInflater.from(getContext());
 						for (int i = 0; i < tickers.length(); i++) {
 							Button button = (Button) inflate.inflate(R.layout.like_button, null);
 							button.setText(tickers.getJSONObject(i).getString("company"));
-							final String tickerId = tickers.getJSONObject(i).getString("id");
+							final String tickerId = tickers.getJSONObject(i).optString("id", "");
 							button.setOnClickListener(new OnClickListener() {
 								public void onClick(View v) {
 									new APIWrapper.PostAnalyticsTask(analytics).execute("like","ticker",tickerId, REFERENCELIKE, UPDATEMESSAGE);
