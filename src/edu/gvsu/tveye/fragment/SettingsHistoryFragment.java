@@ -1,8 +1,10 @@
 package edu.gvsu.tveye.fragment;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import edu.gvsu.tveye.R;
+import edu.gvsu.tveye.adapter.SettingsGridAdapter;
 import edu.gvsu.tveye.api.APIWrapper;
 import edu.gvsu.tveye.api.APIWrapper.JSONObjectCallback;
 import android.app.ListFragment;
@@ -18,11 +20,12 @@ import android.widget.Toast;
 
 public class SettingsHistoryFragment extends ListFragment{
 	
-	ListAdapter adapter;
+	SettingsGridAdapter adapter;
 		
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setListAdapter((adapter = new SettingsGridAdapter(getActivity())));
     }
 	
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -40,9 +43,13 @@ public class SettingsHistoryFragment extends ListFragment{
 			public void onComplete(JSONObject object) {
 				try {
 					Log.d("LikeFragment", object.toString());
-					String[] names = new String[] {"a", "b", "c", "" + object.get("count"), this.toString()};
-					setListAdapter(new ArrayAdapter<String>(getActivity(),
-		                    android.R.layout.simple_list_item_1, names));
+					JSONArray list = object.getJSONArray("list");
+					String[] names = new String[list.length()]; //{"a", "b", "c", "" + object.get("s"), this.toString()};
+					for (int i = 0; i < list.length(); ++i) {
+					    JSONObject rec = list.getJSONObject(i);
+					    names[i] = rec.toString();
+					}
+					adapter.setNames(names);
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}
