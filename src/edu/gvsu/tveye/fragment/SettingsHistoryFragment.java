@@ -4,6 +4,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import edu.gvsu.tveye.R;
+import edu.gvsu.tveye.adapter.SettingsGridAdapter;
 import edu.gvsu.tveye.api.APIWrapper;
 import edu.gvsu.tveye.api.APIWrapper.JSONObjectCallback;
 import android.app.ListFragment;
@@ -19,11 +20,12 @@ import android.widget.Toast;
 
 public class SettingsHistoryFragment extends ListFragment{
 	
-	ListAdapter adapter;
+	SettingsGridAdapter adapter;
 		
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setListAdapter((adapter = new SettingsGridAdapter(getActivity())));
     }
 	
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -47,8 +49,7 @@ public class SettingsHistoryFragment extends ListFragment{
 					    JSONObject rec = list.getJSONObject(i);
 					    names[i] = rec.toString();
 					}
-					setListAdapter(new ArrayAdapter<String>(getActivity(),
-		                    android.R.layout.simple_list_item_1, names));
+					adapter.setNames(names);
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}
