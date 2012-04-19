@@ -6,9 +6,7 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
-import android.widget.Toast;
 import edu.gvsu.tveye.fragment.*;
-import edu.gvsu.tveye.fragment.LoginFragment.LoginCallback;
 
 public class SettingsActivity extends Activity {
 	
