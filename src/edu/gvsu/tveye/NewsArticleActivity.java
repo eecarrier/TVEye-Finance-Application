@@ -9,6 +9,7 @@ import java.net.URLEncoder;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.regex.Pattern;
 
 import org.apache.http.auth.AuthenticationException;
 import org.apache.http.client.utils.URLEncodedUtils;
@@ -28,6 +29,7 @@ import android.text.Html.ImageGetter;
 import android.text.Spanned;
 import android.text.format.DateUtils;
 import android.text.method.LinkMovementMethod;
+import android.text.util.Linkify;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -153,10 +155,12 @@ public class NewsArticleActivity extends Activity {
 					}
 					
 					String titleContent = String.format("<a href=\"%s\">%s</a>", story.optString("url", "#"), story.optString("title", ""));
+					titleContent = titleContent.replace("href=\"http://", "href=\"tveye://");
 					title.setText(Html.fromHtml(titleContent));
 					title.setMovementMethod(LinkMovementMethod.getInstance());
-					content.setText(Html.fromHtml(data.substring(data.indexOf("<div class=\'author\'>"))));
+					content.setText(Html.fromHtml(data.substring(data.indexOf("<div class=\'author\'>")).replaceAll("href=\"http://", "href=\"tveye://")));
 					content.setMovementMethod(LinkMovementMethod.getInstance());
+					
 					
 					try {
 						LinearLayout references = (LinearLayout) findViewById(R.id.references);
