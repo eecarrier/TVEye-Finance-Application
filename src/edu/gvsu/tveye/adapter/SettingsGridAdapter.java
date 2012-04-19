@@ -4,8 +4,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import edu.gvsu.tveye.R;
+
 import android.content.Context;
-import android.graphics.Color;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,7 @@ import android.widget.TextView;
 public class SettingsGridAdapter extends BaseAdapter {
 
 	private String[] names;
+	private String[] action;
 	private Context context;
 	
 	public SettingsGridAdapter(Context context) {
@@ -32,18 +34,21 @@ public class SettingsGridAdapter extends BaseAdapter {
 	}
 	
 	public void setHistory(JSONArray list) {
-		String[] names = new String[list.length()]; //{"a", "b", "c", "" + object.get("s"), this.toString()};
+		String[] names = new String[list.length()];
+		String[] action = new String[list.length()];
 		for (int i = 0; i < list.length(); ++i) {
 		    JSONObject rec;
 			try {
 				rec = list.getJSONObject(i);
-				names[i] = rec.getString("action") + " " + rec.getString("targetId");
+				names[i] = rec.getString("targetId");
+				action[i] = rec.getString("action");
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
 		this.names = names;
+		this.action = action;
 		notifyDataSetChanged();
 	}
 	
@@ -68,7 +73,11 @@ public class SettingsGridAdapter extends BaseAdapter {
 		} else {
 			textView = (TextView) convertView;
 		}
-		textView.setText(names[position]);
+		if (action[position].equals("like"))
+			textView.setCompoundDrawablesWithIntrinsicBounds(context.getResources().getDrawable(R.drawable.thumbs_up), null, null, null);
+		else
+			textView.setCompoundDrawablesWithIntrinsicBounds(context.getResources().getDrawable(R.drawable.thumbs_down), null, null, null);
+		textView.setText("id: " + names[position]);
 		return textView;
 	}
 
