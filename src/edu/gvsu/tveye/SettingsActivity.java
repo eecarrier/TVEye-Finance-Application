@@ -27,13 +27,13 @@ public class SettingsActivity extends Activity {
 				.setTabListener(
 						new TabListener<SettingsHistoryFragment>(this,
 								"History", SettingsHistoryFragment.class)));
-		bar.addTab(bar
-				.newTab()
-				.setText("Companies")
-				.setTabListener(
-						new TabListener<SettingsCompanyFragment>(
-								this, "Companies",
-								SettingsCompanyFragment.class)));
+//		bar.addTab(bar
+//				.newTab()
+//				.setText("Companies")
+//				.setTabListener(
+//						new TabListener<SettingsCompanyFragment>(
+//								this, "Companies",
+//								SettingsCompanyFragment.class)));
 
 		FragmentTransaction ft = getFragmentManager().beginTransaction();
 		ft.addToBackStack(null);

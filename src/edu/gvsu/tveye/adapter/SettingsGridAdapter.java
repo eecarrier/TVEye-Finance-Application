@@ -1,5 +1,9 @@
 package edu.gvsu.tveye.adapter;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.content.Context;
 import android.graphics.Color;
 import android.util.TypedValue;
@@ -27,6 +31,22 @@ public class SettingsGridAdapter extends BaseAdapter {
 		notifyDataSetChanged();
 	}
 	
+	public void setHistory(JSONArray list) {
+		String[] names = new String[list.length()]; //{"a", "b", "c", "" + object.get("s"), this.toString()};
+		for (int i = 0; i < list.length(); ++i) {
+		    JSONObject rec;
+			try {
+				rec = list.getJSONObject(i);
+				names[i] = rec.getString("action") + " " + rec.getString("targetId");
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		this.names = names;
+		notifyDataSetChanged();
+	}
+	
 	public int getCount() {
 		return names.length;
 	}
@@ -43,7 +63,7 @@ public class SettingsGridAdapter extends BaseAdapter {
 		TextView textView;
 		if(convertView == null) {
 			textView = new TextView(context);
-			textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 28);
+			textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 22);
 			textView.setPadding(5, 5, 5, 5);
 		} else {
 			textView = (TextView) convertView;

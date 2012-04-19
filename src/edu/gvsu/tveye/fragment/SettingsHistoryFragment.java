@@ -14,14 +14,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.ListAdapter;
 import android.widget.Toast;
 
 public class SettingsHistoryFragment extends ListFragment{
 	
 	SettingsGridAdapter adapter;
-		
+	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,12 +42,7 @@ public class SettingsHistoryFragment extends ListFragment{
 				try {
 					Log.d("LikeFragment", object.toString());
 					JSONArray list = object.getJSONArray("list");
-					String[] names = new String[list.length()]; //{"a", "b", "c", "" + object.get("s"), this.toString()};
-					for (int i = 0; i < list.length(); ++i) {
-					    JSONObject rec = list.getJSONObject(i);
-					    names[i] = rec.toString();
-					}
-					adapter.setNames(names);
+					adapter.setHistory(list);
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}
