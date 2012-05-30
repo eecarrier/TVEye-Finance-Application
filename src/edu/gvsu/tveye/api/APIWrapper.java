@@ -37,8 +37,8 @@ public class APIWrapper {
 	public static final String CREDENTIALS_MISSING = "Credentials were not supplied";
 	public static final String CREDENTIALS_INVALID = "Credentials were invalid";
 
-	private static final String HOSTNAME = "betaworks-dev.arctry.com";
-	private static final int PORT = 8964;
+	private static final String HOSTNAME = "";
+	private static final int PORT = ;
 
 	private static HttpClient httpClient = new DefaultHttpClient();
 
